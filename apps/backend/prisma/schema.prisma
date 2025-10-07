@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./main.db"
+}
+
+model User {
+  id  String     @id @default(uuid())
+  name String  @unique
+  password  String
+  timestamp DateTime @default(now())
+}
+
+model Transaction {
+  id    String     @id @default(uuid())
+  type String
+  assetId  String
+  timestamp DateTime @default(now())
+  quantity Int
+  price Decimal
+  userId  String
+}
+
+model Asset {
+  id  String     @id @default(uuid())
+  name   String
+  symbol   String
+  marketId   String
+  userId  String
+  timestamp DateTime
+  price Decimal
+}
+
+model library {
+  id  String     @id @default(uuid())
+  name String
+  symbol  String
+  geckoId String
+}
