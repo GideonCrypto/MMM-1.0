@@ -80,9 +80,6 @@ export class ApiService {
 
     async getCandleData() {
         const bitget = new ccxt.bitget({
-            apiKey: process.env.BG_API_ACCESS,
-            secret: process.env.BG_API_SECRET_KEY,
-            password: process.env.BG_API_PASSWORD,
             enableRateLimit: true,
         });
 

@@ -25,6 +25,8 @@ export class AssetService {
                     userId: data.userId,
                     price: data.price,
                     timestamp: new Date(data.timestamp),
+                    marks: null,
+                    notes: null
                 },
             });
         }

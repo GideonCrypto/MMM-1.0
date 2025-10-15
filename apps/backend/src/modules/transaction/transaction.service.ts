@@ -15,6 +15,9 @@ export class TransactionService {
                 quantity: data.quantity,
                 price: data.price,
                 userId: data.userId,
+                marks: null,
+                notes: null,
+                portfolio: null
             },
         });
     }

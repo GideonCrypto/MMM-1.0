@@ -23,6 +23,9 @@ model Transaction {
   quantity Int
   price Decimal
   userId  String
+  marks String?
+  notes String?
+  portfolio String?
 }
 
 model Asset {
@@ -33,6 +36,8 @@ model Asset {
   userId  String
   timestamp DateTime
   price Decimal
+  marks String?
+  notes String?
 }
 
 model library {
@@ -40,4 +45,28 @@ model library {
   name String
   symbol  String
   geckoId String
+}
+
+model Marks {
+  id  String     @id @default(uuid())
+  name String
+  userId  String
+}
+
+model Portfolio {
+  id  String     @id @default(uuid())
+  name String
+  userId  String
+}
+
+model Notes {
+  id  String     @id @default(uuid())
+  name String
+  userId  String
+  createdAt DateTime
+  updatedAt DateTime
+  isArchived Boolean @default(false)
+  linkedTo String
+  path String
+  marks String
 }

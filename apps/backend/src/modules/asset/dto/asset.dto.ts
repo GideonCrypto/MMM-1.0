@@ -1,5 +1,5 @@
-import { IsNumber, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 // query
 export class CreateAssetDto {
     @ApiProperty({ example: 'Bitcoin' })
@@ -25,6 +25,16 @@ export class CreateAssetDto {
     @ApiProperty({ example: '1758881614617' })
     @IsNumber()
     timestamp!: number;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    @IsOptional()
+    marks?: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    @IsOptional()
+    notes?: string;
 }
 
 export class GetAssetDto {
