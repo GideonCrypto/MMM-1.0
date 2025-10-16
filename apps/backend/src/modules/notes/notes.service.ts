@@ -61,7 +61,7 @@ export class NotesService {
     }
 
     async updateNote(dto: UpdateNoteDto){
-        const note = await this.prisma.notes.findUnique({ where: { 
+        const note = await this.prisma.notes.findFirst({ where: { 
             id: dto.id,
             userId: dto.userId
         } });//check db
@@ -113,7 +113,7 @@ export class NotesService {
         const filePath = note.path;
 
         if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+            fs.unlinkSync(filePath);// delete .md file
         }
 
         await this.prisma.notes.delete({ where: { id } });
@@ -130,7 +130,14 @@ export class NotesService {
     async getNoteById(id: string) {
         const note = await this.prisma.notes.findFirst({ where: { id } });
         if (!note) throw new NotFoundException('Note not found');
-        return note
+
+        const fileContent = fs.readFileSync(note.path, 'utf8');//raed .md file
+        const parsed = matter(fileContent);//pars frontmatter + note body
+
+        return {
+            note, 
+            parsed
+        }
     }
 
     async getNoteByUser(id: string) {

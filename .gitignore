@@ -3,6 +3,7 @@
 /node_modules
 /build
 apps/backend/node_modules/
+apps/backend/vault/
 apps/frontend/node_modules/
 apps/electron/node_modules/
 apps/node_modules/
