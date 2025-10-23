@@ -86,6 +86,8 @@ model Swaps {
   priceChange Decimal
   priceReceive Decimal
   timestamp DateTime
+  sellTransactionId String
+  buyTransactionId String
 }
 
 model Drops {
