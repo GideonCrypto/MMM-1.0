@@ -8,6 +8,7 @@ import { MarksModule } from './modules/marks/marks.module';
 import { PortfolioModule } from './modules/portfolio/portfolio.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { SwapModule } from './modules/swap/swap.module';
+import { StakingModule } from './modules/staking/staking.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SwapModule } from './modules/swap/swap.module';
             PortfolioModule,
             NotesModule,
             SwapModule,
+            StakingModule,
           ],
   controllers: [],
   providers: [],
