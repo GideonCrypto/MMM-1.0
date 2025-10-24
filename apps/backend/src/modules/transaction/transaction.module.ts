@@ -7,5 +7,6 @@ import { TransactionController } from './transaction.controller';
     imports: [PrismaModule],
     controllers: [TransactionController],
     providers: [TransactionService],
+    exports: [TransactionService],
 })
 export class TransactionModule {}
