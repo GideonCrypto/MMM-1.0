@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, InternalServerErrorException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, InternalServerErrorException, Param, Patch, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { CreateTransactionDto, GetTransactionDto, GetTransactionsDto } from './dto/transaction.dto';
+import { CreateTransactionDto, GetTransactionDto, GetTransactionsDto, UpdateTransactionDto } from './dto/transaction.dto';
 import { TransactionService } from './transaction.service';
 
 @Controller('transactions')
@@ -54,6 +54,21 @@ export class TransactionController {
             return result;
         } catch (error) {
             console.error('Delete transaction error:', error);
+            throw new InternalServerErrorException('Unexpected error occurred');
+        }
+    }
+
+    @Patch('updateTransaction')
+    @ApiOkResponse({
+                description: 'Success',
+                type: [UpdateTransactionDto],
+            })
+    update(@Body() updateTransaction: UpdateTransactionDto) {
+        try {
+            const transaction = this.service.updateTransaction(updateTransaction);;
+            return transaction;
+        } catch (error) {
+            console.error('Update transaction error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');
         }
     }

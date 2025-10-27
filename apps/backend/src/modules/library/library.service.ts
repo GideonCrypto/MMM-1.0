@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { AddItemToLibraryDto } from './dto/library.dto';
 import axios from 'axios';
@@ -61,5 +61,19 @@ export class LibraryService {
         }// batch update
 
         return { message: `Sync finished. Added ${addedCount} assets` };
+    }
+
+    async getLibByName(name: string) {
+        const drop = await this.prisma.library.findFirst({ where: { name } });
+        if (!drop) throw new NotFoundException('Name not found');
+
+        return drop
+    }
+
+    async getLibByGeckoId(geckoId: string) {
+        const drop = await this.prisma.library.findFirst({ where: { geckoId } });
+        if (!drop) throw new NotFoundException('GeckoId not found');
+
+        return drop
     }
 }

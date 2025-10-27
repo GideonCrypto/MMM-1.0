@@ -40,6 +40,69 @@ export class CreateTransactionDto {
     @IsString()
     @IsOptional()
     portfolio?: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    source: string;
+
+    @ApiProperty({ example: '1' })
+    @IsNumber()
+    @IsOptional()
+    fee?: number;
+}
+
+export class UpdateTransactionDto {
+    @ApiProperty({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    id!: string;
+
+    @ApiProperty({ example: 'buy' })
+    @IsString()
+    type!: string;
+
+    @ApiProperty({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    assetId!: string;
+
+    @ApiProperty({ example: '1758881614617' })
+    @IsNumber()
+    timestamp!: number;
+
+    @ApiProperty({ example: '1' })
+    @IsNumber()
+    quantity!: number;
+
+    @ApiProperty({ example: '100' })
+    @IsNumber()
+    price!: number;
+
+    @ApiProperty({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    userId!: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    @IsOptional()
+    marks?: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    @IsOptional()
+    notes?: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    @IsOptional()
+    portfolio?: string;
+
+    @ApiPropertyOptional({ example: '08ffce73-4e68-4c90-8e09-c77722dc6c80' })
+    @IsString()
+    source: string;
+
+    @ApiProperty({ example: '1' })
+    @IsNumber()
+    @IsOptional()
+    fee?: number;
 }
 
 export class GetTransactionDto {

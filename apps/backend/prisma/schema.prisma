@@ -26,6 +26,8 @@ model Transaction {
   marks String?
   notes String?
   portfolio String?
+  fee Decimal?
+  source String
 }
 
 model Asset {
@@ -69,4 +71,48 @@ model Notes {
   linkedTo String
   path String
   marks String
+}
+
+model Swaps {
+  id  String     @id @default(uuid())
+  userId  String
+  assetIdChange String
+  assetIdReceive String
+  fee Decimal?
+  notes String?
+  marks String?
+  changeAmount Decimal
+  receiveAmount Decimal
+  priceChange Decimal
+  priceReceive Decimal
+  timestamp DateTime
+  sellTransactionId String
+  buyTransactionId String
+}
+
+model Drops {
+  id  String     @id @default(uuid())
+  userId  String
+  assetId String
+  fee Decimal?
+  timestamp DateTime
+  notes String?
+  marks String?
+  value Decimal
+  sold Decimal?
+  price Decimal
+  transactions String?
+}
+
+model Staking {
+  id  String     @id @default(uuid())
+  userId  String
+  assetId String
+  value Decimal
+  reward Decimal
+  rewardSold Decimal
+  coinToReceive String
+  timestamp DateTime
+  notes String?
+  marks String?
 }
