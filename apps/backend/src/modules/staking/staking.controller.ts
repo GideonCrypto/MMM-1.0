@@ -17,6 +17,7 @@ export class StakingController {
         try {
             return this.service.createStaking(createStakingDto);
         } catch (error) {
+            console.error('Create swap error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');
         }
     }
@@ -28,8 +29,7 @@ export class StakingController {
             })
     updateStaking(@Body() updateStakingDto: UpdateStakingDto) {
         try {
-            const swap = this.service.updateStaking(updateStakingDto);;
-            return swap;
+            return this.service.updateStaking(updateStakingDto);;
         } catch (error) {
             console.error('Update swap error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');
@@ -67,8 +67,7 @@ export class StakingController {
     })
     async getStakingById(@Param('id') id: string) {
         try {
-            const result = await this.service.getStakingById(id);
-            return result;
+            return await this.service.getStakingById(id);
         } catch (error) {
             console.error('Get staking error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');
@@ -93,8 +92,7 @@ export class StakingController {
     })
     async getStakingByUserId(@Param('userId') userId: string) {
         try {
-            const result = await this.service.getStakesByUser(userId);
-            return result;
+            return await this.service.getStakesByUser(userId);
         } catch (error) {
             console.error('Get staking error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');
@@ -105,8 +103,7 @@ export class StakingController {
     @ApiOkResponse({ description: 'Staking deleted successfully' })
     async deleteStaking(@Param('stakingId') stakingId: string) {
         try {
-            const result = await this.service.deleteStaking(stakingId);
-            return result;
+            return await this.service.deleteStaking(stakingId);
         } catch (error) {
             console.error('Delete staking error:', error);
             throw new InternalServerErrorException('Unexpected error occurred');

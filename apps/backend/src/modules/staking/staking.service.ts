@@ -76,7 +76,7 @@ export class StakingService {
     }
 
     async deleteStaking(id: string){
-        const staking = await this.prisma.staking.findFirst({ where: { id } });
+        await this.prisma.staking.findFirst({ where: { id } });
         await this.prisma.staking.delete({ where: { id } });
 
         return { message: 'Staking deleted' }

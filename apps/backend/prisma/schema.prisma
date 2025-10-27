@@ -98,6 +98,10 @@ model Drops {
   timestamp DateTime
   notes String?
   marks String?
+  value Decimal
+  sold Decimal?
+  price Decimal
+  transactions String?
 }
 
 model Staking {
