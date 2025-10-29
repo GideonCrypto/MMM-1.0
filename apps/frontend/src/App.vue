@@ -1,9 +1,11 @@
 <script setup lang="ts">
-
+    import MainPage from '@/components/pages/main/MainPage.vue';
+    import MainMenu from '@/components/menu/MainMenu.vue';
 </script>
 
 <template>
-    <h2>hgjghk</h2>
+    <MainMenu/>
+    <MainPage/>
 </template>
 
 <style scoped>
