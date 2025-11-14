@@ -1,13 +1,26 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { onMounted, ref } from 'vue'
+  import { useModalStore, ModalForms } from '../../../store/useModalStore'
+  import { useCommonDataStore } from '../../../store/commonDataStore'
+  import { storeToRefs } from 'pinia'
 
+  const modal = useModalStore()
+  const { open } = modal
+
+  const commonData = useCommonDataStore()
+  const { getPortfolios, getMarks } = commonData
+
+  onMounted(async () => {
+    await getPortfolios()
+    await getMarks()
+  })
 </script>
 
 <template>
   <div class="main-page-wrapper">
     <div class="main-page-sidebar">
-      <button>Add transaction</button>
-      <button>Add drop</button>
+      <button @click="open(ModalForms.AddTransaction)" >Add transaction</button>
+      <button @click="open(ModalForms.AddDrop)">Add drop</button>
       <button>Add staking</button>
       <button>Add swap</button>
       <select name="portfolio" >
