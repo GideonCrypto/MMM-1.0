@@ -1,14 +1,17 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     const marks = ref([])// current marks from db
     const portfolios = ref([])// current portfolios from db
+    const assets = ref([])// current assets from db by userId
+    const transactions = ref([])// current asset transactions from db by userId ans assetId
     const assetSuggestions = ref<any[]>([])// asset suggestions for search asset
     const libData = ref<any[]>([])// current lib data about asset from db
     const userIdStore = "08ffce73-4e68-4c90-8e09-c77722dc6c80"// current user id
 
+    // -------------------------------------------- api req
     async function getMarks() {
         const response = await axios.post(`http://localhost:3005/marks/getMarks`,
             {
@@ -66,6 +69,40 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         }
     }// get asset for suggestion and creation
 
+    async function getAssets() {
+        const response = await axios.post(`http://localhost:3005/assets/getAssets`,
+            {
+                userId: userIdStore
+            }
+        )
+
+        assets.value = response.data
+    }// get current assets by user
+
+    async function getTransaction(assetId: string) {
+        const response = await axios.post(`http://localhost:3005/transactions/getTransactions`,
+            {
+                userId: userIdStore,
+                assetId: assetId
+            }
+        )
+
+        transactions.value = response.data
+    }// get current assets by user
+    // --------------------------------------------
+    // -------------------------------------------- dictionary
+    function useDict(listRef, idField = 'id', valueField = 'name') {
+        return computed(() =>
+            Object.fromEntries(
+                listRef.value.map(item => [item[idField], item[valueField]])
+            )
+        )
+    }// dictionary for names
+
+    const dictPortfolios = useDict(portfolios, 'id', 'name')//create dictionary for portfolio
+    const dictMarks = useDict(marks, 'id', 'name')//create dictionary for marks
+    // --------------------------------------------
+
     return {
         // vars
         marks,
@@ -73,9 +110,15 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         assetSuggestions,
         libData,
         userIdStore,
+        assets,
+        transactions,
+        dictPortfolios,
+        dictMarks,
         // funcs
         getPortfolios,
         getMarks,
         getAssetsNames,
+        getAssets,
+        getTransaction,
     }
 })

@@ -11,7 +11,7 @@
     const { close } = modal
 
     const commonData = useCommonDataStore()//store with common used data
-    const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore } = commonData
+    const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore, getTransaction, getAssets } = commonData
     const { marks, portfolios, libData } = storeToRefs(commonData)
     // 
 
@@ -51,7 +51,8 @@
                     }
                 )
 
-                createTransaction(createAsset, formData)
+                await getAssets()// update assets list in store for ref render
+                await createTransaction(createAsset, formData)
             }// if asset not exist create it and trs
         }
         modal.close()
@@ -74,6 +75,7 @@
                 fee: trs.value.fee
             }
         )
+        await getTransaction(asset.id)// update transaction list in store for ref render
     }
 
     function selectAsset(asset: any) {

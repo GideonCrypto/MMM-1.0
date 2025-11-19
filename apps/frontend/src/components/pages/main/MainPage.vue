@@ -1,18 +1,39 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useModalStore, ModalForms } from '../../../store/useModalStore'
   import { useCommonDataStore } from '../../../store/commonDataStore'
   import { storeToRefs } from 'pinia'
 
+  // store
   const modal = useModalStore()
   const { open } = modal
 
   const commonData = useCommonDataStore()
-  const { getPortfolios, getMarks } = commonData
+  const { getPortfolios, getMarks, getAssets, getTransaction } = commonData
+  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks } = storeToRefs(commonData)
+  // 
+
+  const viewBlock = ref(false)
+
+  function changeBlockView() {
+    viewBlock.value = !viewBlock.value
+  }// change view from asset to trs
+
+  async function openTrs(id: string) {
+    changeBlockView()
+    await getTransaction(id)
+  }// open trs book by assetId
+
+  // Массив только с покупками
+const buys = computed(() => transactions.value.filter(item => item.type === 'buy'));
+
+// Массив только с продажами
+const sells = computed(() => transactions.value.filter(item => item.type === 'sell'));
 
   onMounted(async () => {
     await getPortfolios()
     await getMarks()
+    await getAssets()
   })
 </script>
 
@@ -40,6 +61,7 @@
       </div>
       <div class="main-page-data">
         <div class="main-page-data-submenu">
+          <button v-show="viewBlock" @click="changeBlockView">Back</button>
           <select name="dataType" >
             <option value="all">All data</option>
             <option value="transactions">Transactions</option>
@@ -47,92 +69,52 @@
             <option value="staking">Staking</option>
             <option value="drops">Drops</option>
           </select>
-          <select name="viewType" >
-            <option value="all">Book</option>
-            <option value="transactions">Single</option>
-          </select>
         </div>
-        <div class="main-page-data-transactions">
-          <div class="trs-buy">
-            <h4>Buy</h4>
-            <div class="trs-list">
-              <div class="trs-item nav">
-                <span>price</span>
-                <span>invested</span>
-                <span>quantity</span>
-                <span>date</span>
-                <span>profit</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-            </div>
-          </div>
-          <div class="trs-sell">
-            <h4>Sell</h4>
-            <div class="trs-list">
-              <div class="trs-item nav">
-                <span>price</span>
-                <span>invested</span>
-                <span>quantity</span>
-                <span>date</span>
-                <span>profit</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-              <div class="trs-item">
-                <span>100000</span>
-                <span>231</span>
-                <span>0.2056</span>
-                <span>12.2.2222</span>
-                <span>20</span>
-              </div>
-            </div>
-          </div>
+        <!-- Asset list -->
+        <div v-show="!viewBlock" class="main-page-data-assets">
+          <ul class="table">
+            <ul class="header-row">
+              <li class="cell head">Name</li>
+              <li class="cell head">Symbol</li>
+              <li class="cell head">Price</li>
+              <li class="cell head">Marks</li>
+              <li class="cell head">Notes</li>
+            </ul>
+            <li class="row" v-for="(item) in assets" :key="item.id" @click="openTrs(item.id)">
+              <div class="full-width top">Added: {{item.timestamp}}</div>
+              <ul class="grid-row">
+                <li class="cell">{{item.name}}</li>
+                <li class="cell">{{item.symbol}}</li>
+                <li class="cell">{{item.price}}</li>
+                <li class="cell">{{item.marks ? item.marks : '-'}}</li>
+                <li class="cell">{{item.notes ? item.notes : '-'}}</li>
+              </ul>
+              <div class="full-width bottom">Метрики и кнопки </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Transactions list -->
+        <div v-show="viewBlock" class="main-page-data-transactions">
+          <ul class="table">
+            <ul class="header-row">
+              <li class="cell head">Price</li>
+              <li class="cell head">Quantity</li>
+              <li class="cell head">Invested</li>
+              <li class="cell head">Source</li>
+              <li class="cell head">Portfolio</li>
+            </ul>
+            <li class="row" v-for="(item) in transactions" :key="item.id">
+              <div class="full-width top">Added: {{item.timestamp}}</div>
+              <ul class="grid-row">
+                <li class="cell" :class="item.type">{{item.price}}</li>
+                <li class="cell" :class="item.type">{{item.quantity}}</li>
+                <li class="cell" :class="item.type">{{item.price * item.quantity}}</li>
+                <li class="cell" :class="item.type">{{item.source}}</li>
+                <li class="cell" :class="item.type">{{ dictPortfolios[item.portfolio] || '-' }}</li>
+              </ul>
+              <div class="full-width bottom">Метрики</div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -141,16 +123,15 @@
 
 <style lang="postcss" scoped>
   /* ------- GENERAL ------- */
-  .main-page-wrapper, .main-page-sidebar, .main-page-content, .main-page-data, .main-page-data-transactions, .trs-item {
+  .main-page-wrapper, .main-page-sidebar, .main-page-content, .main-page-data, .table, .row {
     display: flex;
     border-radius: 5px;
   }
 
-  .trs-sell, .trs-buy {
-    border-radius: 5px;
-    margin: 1px;
-    width: 50%;
+  .main-page-sidebar, .main-page-data, .table, .row {
+    flex-direction: column;
   }
+
   /* ------- TREE ------- */
   .main-page-wrapper {
     width: 100vw;
@@ -159,7 +140,6 @@
       width: 8%;
       margin: 5px;
       border: 1px solid black;
-      flex-direction: column;
     }
 
     & .main-page-content {
@@ -167,40 +147,101 @@
       border: 1px solid black;
       margin: 5px;
       & .main-page-analitics {
-        width: 35%;
+        width: 100%;
         border-right: 1px solid black;
         padding: 5px;
-        & .main-page-graph {
-      
-        }
-        & .main-page-metrics {
-      
-        }
       }
       & .main-page-data {
-        flex-direction: column;
-        width: 65%;
         padding: 5px;
-        & .main-page-data-submenu {
-          width: 100%;
-        }
-        & .main-page-data-transactions {
-          & .trs-buy {
-            background-color: green;
-          }
-          & .trs-sell {
-            background-color: red;
-          }
-        }
       }
     }
   }
 
-.trs-list {
-  margin: 5px;
-  & .trs-item {
-    justify-content: space-between;
-  }
+/* ------- Table ------- */
+.table {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 93vh;
+  overflow-y: auto;
+  border: 1px solid #bfbfbf;
+  background: #fff;
+
+  & .header-row {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid #bfbfbf;
+    background: #f0f0f0;
+    position: sticky;  
+    top: 0;
+    z-index: 10;
+
+    & .head {
+      padding: 8px 10px;
+      font-weight: bold;
+      border-right: 1px solid #d0d0d0;
+    }
+    & .head:last-child {
+      border-right: none;
+    }
+  }/* table header */
+
+  & .row {
+    list-style: none;
+    border-bottom: 1px solid #d0d0d0;
+
+    & .grid-row {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    & .full-width {
+      padding: 6px 10px;
+      background: #f7f7f7;
+      font-weight: 600;
+      border-bottom: 1px solid #d0d0d0;
+    }
+
+    & .bottom {
+      border-top: 1px solid #d0d0d0;
+    }
+  }/* table row */
 }
 
+.table::-webkit-scrollbar {
+  display: none;
+} /* hide scroll */
+
+.cell {
+  padding: 8px 10px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #d0d0d0;
+  background: #fff;
+}
+.cell:last-child {
+  border-right: none;
+}
+
+.grid-row:hover .cell {
+  background: #eaf2fd;
+  cursor: pointer;
+}/* row hover */
+
+.sell {
+  background-color: lightcoral;
+}
+
+.buy {
+  background-color: lightgreen;
+}
 </style>
