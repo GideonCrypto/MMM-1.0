@@ -194,6 +194,4 @@
     </form>
 </template>
 
-<style lang="postcss" scoped>
-
-</style>
+<style src="./modalForms.css" scoped></style>

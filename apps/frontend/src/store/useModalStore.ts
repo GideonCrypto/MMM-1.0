@@ -1,42 +1,93 @@
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 export enum ModalForms {
     AddTransaction = 'AddTransaction',
+    UpdateTransaction = 'UpdateTransaction',
     AddDrop = 'AddDrop',
-}// enum with modal forms names
+}
 
 export const useModalStore = defineStore('useModalStore', () => {
-    const isOpen = ref(false)// check is modal open
+    const isOpen = ref(false)
     const currentModal = ref<ModalForms | null>(null)
+    const currentTrasnsaction = ref()
 
-    const formData = reactive<Record<string, any>>({})// data from modal window
+    const formData = reactive<Record<string, any>>({})
     const errors = reactive<Record<string, string>>({})
 
-    const baseValidationRules = {// base validation rules for modal types
+    // -------------------------------------------- marks multiselect logic
+    const selectedMarks = ref<Array<{ id: string; name: string }>>([])//choosed marks
+    const currentMarkId = ref("")// current choosed mark
+
+    
+    const availableMarks = computed(() => {
+        if (!allMarks.value) return []
+        return allMarks.value.filter(
+            m => !selectedMarks.value.find(s => s.id === m.id)
+        )
+    })// available marks (without choosed)
+
+    const allMarks = ref<any[]>([])
+
+    function setMarksList(list: any[]) {
+        allMarks.value = list
+
+        if (Array.isArray(formData.markId)) {
+            selectedMarks.value = allMarks.value.filter(m =>
+                formData.markId.includes(m.id)
+            )
+        }
+    }
+
+    function addMark() {
+        if (!currentMarkId.value) return
+
+        const mark = allMarks.value.find(m => m.id === currentMarkId.value)
+        if (!mark) return
+
+        if (!selectedMarks.value.find(m => m.id === mark.id)) {
+            selectedMarks.value.push(mark)
+        }
+
+        currentMarkId.value = ""
+        formData.markId = selectedMarks.value.map(m => m.id)
+    }
+
+    function removeMark(mark: { id: string }) {
+        selectedMarks.value = selectedMarks.value.filter(m => m.id !== mark.id)
+        formData.markId = selectedMarks.value.map(m => m.id)
+    }
+    // --------------------------------------------
+    // -------------------------------------------- valiating rules
+    const baseValidationRules = {
         addData: {
             assetId: (val: string) => (!val ? 'Введите Asset' : null),
             date: (val: number) => (!val ? 'Введите Date' : null),
             portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
             quantity: (val: number) => (!val ? 'Введите Quantity' : null),
             price: (val: number) => (!val ? 'Введите Price' : null),
-            fee: (val: number) => (!val ? 'Введите Fee' : null),
+            fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
         },
     }
 
-    const formSpecificRules = {// rules for specific inputs in forms
+    const formSpecificRules = {
         AddTransaction: {
             type: (val: string) => (!val ? 'Введите Type' : null),
         },
-        AddDrop: {
-
+        UpdateTransaction: {
+            type: (val: string) => (!val ? 'Введите Type' : null),
         },
+        AddDrop: {},
     }
 
-    const validationRules = {// rules summary for modals
+    const validationRules = {
         [ModalForms.AddTransaction]: {
             ...baseValidationRules.addData,
             ...formSpecificRules.AddTransaction,
+        },
+        [ModalForms.UpdateTransaction]: {
+            ...baseValidationRules.addData,
+            ...formSpecificRules.UpdateTransaction,
         },
         [ModalForms.AddDrop]: {
             ...baseValidationRules.addData,
@@ -44,7 +95,7 @@ export const useModalStore = defineStore('useModalStore', () => {
         },
     }
 
-    const defaultFormData: Record<ModalForms, Record<string, any>> = {// default form data by modal name
+    const defaultFormData: Record<ModalForms, Record<string, any>> = {
         [ModalForms.AddTransaction]: {
             assetId: '',
             asset: '',
@@ -53,35 +104,73 @@ export const useModalStore = defineStore('useModalStore', () => {
             quantity: '',
             price: '',
             fee: '',
-            markId: '',
+            markId: [],
             portfolioId: '',
+            source: ''
         },
-        [ModalForms.AddDrop]: {
-            
-        },
+        [ModalForms.UpdateTransaction]: {},
+        [ModalForms.AddDrop]: {},
     }
-
-    function timeConverter(date: Date) {// converter for date
+// --------------------------------------------
+    function timeConverter(date: Date) {
         const timestamp = date.toISOString()
         return timestamp
     }
-
-    function open(form: ModalForms, initialData: Record<string, any> = {}) {// opening modal
+// -------------------------------------------- modal logic
+    function open(form: ModalForms, initialData: Record<string, any> = {}) {
         currentModal.value = form
         isOpen.value = true
-        Object.assign(formData, defaultFormData[form])
-        Object.assign(formData, initialData)
+
+        Object.assign(formData, defaultFormData[form])// reset form to default
+
+        if (form === ModalForms.UpdateTransaction && currentTrasnsaction.value) {
+            const t = currentTrasnsaction.value
+
+            Object.assign(formData, {
+                id: t.id ?? '',
+                assetId: t.assetId ?? '',
+                type: t.type ?? '',
+                quantity: t.quantity ?? '',
+                price: t.price ?? '',
+                fee: t.fee ?? '',
+                source: t.source ?? '',
+                portfolioId: t.portfolio ?? '',
+                markId: Array.isArray(t.marks)
+                    ? t.marks
+                    : t.marks
+                    ? t.marks.split(',').map(m => m.trim())
+                    : [],
+                // date to datetime-local
+                date: t.timestamp
+                    ? new Date(t.timestamp).toISOString().slice(0, 16)
+                    : ''
+            })
+        }//if UpdateTransaction do autofill
+
+        Object.assign(formData, initialData)// init data
+
         resetErrors()
+
+        if (Array.isArray(formData.markId) && allMarks.value?.length > 0) {
+            selectedMarks.value = allMarks.value.filter(m =>
+                formData.markId.includes(m.id)
+            )
+        }// marks
     }
 
-    function close() {// closing modal
+    function close() {
         isOpen.value = false
         currentModal.value = null
+
         resetForm()
         resetErrors()
+
+        selectedMarks.value = []
+        currentMarkId.value = ""
+        formData.markId = []
     }
 
-    function validate(): boolean {// validating modal by rules
+    function validate(): boolean {
         if (!currentModal.value) return false
         const rules = validationRules[currentModal.value]
         let isValid = true
@@ -111,19 +200,32 @@ export const useModalStore = defineStore('useModalStore', () => {
         if (currentModal.value) {
             Object.assign(formData, defaultFormData[currentModal.value])
         }
+
+        selectedMarks.value = []
+        currentMarkId.value = ""
     }
 
     function resetErrors() {
         Object.keys(errors).forEach((key) => delete errors[key])
     }
-
+// --------------------------------------------
     return {
-        // vars
+        // base modal state
         isOpen,
         currentModal,
         formData,
         errors,
-        // funcs
+        currentTrasnsaction,
+
+        // marks multiselect logic
+        selectedMarks,
+        currentMarkId,
+        availableMarks,
+        setMarksList,
+        addMark,
+        removeMark,
+
+        // modal functions
         open,
         close,
         validate,

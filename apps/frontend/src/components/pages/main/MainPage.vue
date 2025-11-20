@@ -7,22 +7,21 @@
   // store
   const modal = useModalStore()
   const { open } = modal
+  const { currentTrasnsaction } = storeToRefs(modal)
 
   const commonData = useCommonDataStore()
-  const { getPortfolios, getMarks, getAssets, getTransaction } = commonData
-  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks } = storeToRefs(commonData)
+  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView } = commonData
+  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock } = storeToRefs(commonData)
   // 
-
-  const viewBlock = ref(false)
-
-  function changeBlockView() {
-    viewBlock.value = !viewBlock.value
-  }// change view from asset to trs
-
   async function openTrs(id: string) {
     changeBlockView()
     await getTransaction(id)
   }// open trs book by assetId
+
+  async function updateTrs(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.UpdateTransaction)
+  }// update trs modal and data 
 
   // Массив только с покупками
 const buys = computed(() => transactions.value.filter(item => item.type === 'buy'));
@@ -103,7 +102,7 @@ const sells = computed(() => transactions.value.filter(item => item.type === 'se
               <li class="cell head">Source</li>
               <li class="cell head">Portfolio</li>
             </ul>
-            <li class="row" v-for="(item) in transactions" :key="item.id">
+            <li class="row" v-for="(item) in transactions" :key="item.id" @click="updateTrs(item)">
               <div class="full-width top">Added: {{item.timestamp}}</div>
               <ul class="grid-row">
                 <li class="cell" :class="item.type">{{item.price}}</li>

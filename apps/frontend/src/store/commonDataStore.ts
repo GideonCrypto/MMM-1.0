@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useCommonDataStore = defineStore('useCommonDataStore', () => {
+    const viewBlock = ref(false)
     const marks = ref([])// current marks from db
     const portfolios = ref([])// current portfolios from db
     const assets = ref([])// current assets from db by userId
@@ -10,7 +11,6 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     const assetSuggestions = ref<any[]>([])// asset suggestions for search asset
     const libData = ref<any[]>([])// current lib data about asset from db
     const userIdStore = "08ffce73-4e68-4c90-8e09-c77722dc6c80"// current user id
-
     // -------------------------------------------- api req
     async function getMarks() {
         const response = await axios.post(`http://localhost:3005/marks/getMarks`,
@@ -102,7 +102,10 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     const dictPortfolios = useDict(portfolios, 'id', 'name')//create dictionary for portfolio
     const dictMarks = useDict(marks, 'id', 'name')//create dictionary for marks
     // --------------------------------------------
-
+    // -------------------------------------------- togglers
+    function changeBlockView() {
+        viewBlock.value = !viewBlock.value
+    }// change view from asset to trs
     return {
         // vars
         marks,
@@ -114,11 +117,13 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         transactions,
         dictPortfolios,
         dictMarks,
+        viewBlock,
         // funcs
         getPortfolios,
         getMarks,
         getAssetsNames,
         getAssets,
         getTransaction,
+        changeBlockView,
     }
 })
