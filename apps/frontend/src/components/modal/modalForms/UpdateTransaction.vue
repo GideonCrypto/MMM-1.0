@@ -2,6 +2,7 @@
     import { onMounted, ref, computed, watch } from 'vue'
     import { useModalStore } from '../../../store/useModalStore'
     import { useCommonDataStore } from '../../../store/commonDataStore'
+    import { useCommonReqStore } from '../../../store/useCommonReqStore'
     import { storeToRefs } from 'pinia'
     import axios from 'axios'
 
@@ -13,6 +14,9 @@
     const commonData = useCommonDataStore() // store with common used data
     const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore, getTransaction, getAssets, changeBlockView } = commonData
     const { marks, portfolios, libData, transactions } = storeToRefs(commonData)
+
+    const reqData = useCommonReqStore()//store with common requests
+    const { updateTransaction, deleteItem } = reqData
     // 
     const searchType = ref('name')
 
@@ -20,21 +24,18 @@
         if (!modal.validate()) {
             return
         } else {
-            await axios.patch('http://localhost:3005/transactions/updateTransaction', {
+            await updateTransaction({
                 id: currentTrasnsaction.value.id,
-                userId: userIdStore,
                 type: formData.value.type,
                 assetId: currentTrasnsaction.value.assetId,
-                timestamp: formData.value.date,
+                date: formData.value.date,
                 quantity: formData.value.quantity,
                 price: formData.value.price,
-                marks: formData.value.markId ? formData.value.markId.toString() : null,
-                notes: null,
-                portfolio: formData.value.portfolioId,
+                markId: formData.value.markId ? formData.value.markId.toString() : null,
+                portfolioId: formData.value.portfolioId,
                 source: formData.value.source ? formData.value.source : null,
                 fee: formData.value.fee
-            })
-            
+            }, userIdStore)
             console.log('Submitting data', formData.value)
 
             await getTransaction(currentTrasnsaction.value.assetId)// update trs list
@@ -43,11 +44,11 @@
     }
 
     async function deleteTrs() {
-        await axios.delete(`http://localhost:3005/transactions/${currentTrasnsaction.value.id}`)
+        await deleteItem(`transactions/${currentTrasnsaction.value.id}`)// delete trs
 
         if (transactions.value.length === 1) {
             if (transactions.value[0].assetId === currentTrasnsaction.value.assetId) {
-                await axios.delete(`http://localhost:3005/assets/${currentTrasnsaction.value.assetId}`)
+                await deleteItem(`assets/${currentTrasnsaction.value.assetId}`)// delete asset
                 await getAssets()// update assets list
                 changeBlockView()// get to assets page
             }

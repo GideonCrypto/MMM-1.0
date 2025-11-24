@@ -2,6 +2,7 @@
     import { onMounted, ref, watch } from 'vue'
     import { useModalStore } from '../../../store/useModalStore'
     import { useCommonDataStore } from '../../../store/commonDataStore'
+    import { useCommonReqStore } from '../../../store/useCommonReqStore'
     import { storeToRefs } from 'pinia'
     import axios from 'axios'
 
@@ -12,7 +13,10 @@
 
     const commonData = useCommonDataStore()//store with common used data
     const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore, getTransaction, getAssets } = commonData
-    const { marks, portfolios, libData } = storeToRefs(commonData)
+    const { marks, portfolios, libData, assets } = storeToRefs(commonData)
+
+    const reqData = useCommonReqStore()//store with common requests
+    const { createAsset, createTransaction } = reqData
     // 
 
     const searchType = ref('name')
@@ -22,60 +26,55 @@
         if (!modal.validate()) {// check valid data in form
             return
         } else {
-            const assets = await axios.post(`http://localhost:3005/assets/getAssets`,
-                {
-                    userId: userIdStore
-                }
-            )
-
-            assets.data.forEach(e => {
+            await getAssets()
+            
+            assets.value.forEach(e => {
                 if (e.marketId === libData.value[0].geckoId) {
                     isAssetExist = true
 
                     if (isAssetExist) {
-                        createTransaction(e, formData)
+                        createTransaction({
+                            type: formData.value.type,
+                            assetId: e.id,
+                            date: formData.value.date,
+                            quantity: formData.value.quantity,
+                            price: formData.value.price,
+                            markId: formData.value.markId ? formData.value.markId : null,
+                            portfolioId: formData.value.portfolioId,
+                            source: "spot",
+                            fee: formData.value.fee
+                        }, userIdStore)
+                        getTransaction(e.id)
                     }// if asset exist create trs
                     return
                 }
             });// check is asset created
 
             if (!isAssetExist) {
-                const createAsset = await axios.post(`http://localhost:3005/assets/createAsset`,
-                    {
-                        userId: userIdStore,
+                const asset = await createAsset({
                         name: libData.value[0].name,
                         symbol: libData.value[0].symbol,
-                        marketId: libData.value[0].geckoId,
-                        price: 100,
-                        timestamp: formData.value.date,
-                    }
-                )
+                        geckoId: libData.value[0].geckoId,
+                        date: formData.value.date,
+                    } ,userIdStore)
 
                 await getAssets()// update assets list in store for ref render
-                await createTransaction(createAsset, formData)
+                await createTransaction({
+                    type: formData.value.type,
+                    assetId: asset.id,
+                    date: formData.value.date,
+                    quantity: formData.value.quantity,
+                    price: formData.value.price,
+                    markId: formData.value.markId ? formData.value.markId : null,
+                    portfolioId: formData.value.portfolioId,
+                    source: "spot",
+                    fee: formData.value.fee
+                }, userIdStore)
+                await getTransaction(asset.id)// update transaction list in store for ref render
             }// if asset not exist create it and trs
         }
         modal.close()
         isAssetExist = false
-    }
-
-    async function createTransaction(asset: any, trs: any) {
-        const createTransaction = await axios.post(`http://localhost:3005/transactions/createTransaction`,
-            {
-                userId: userIdStore,
-                type: trs.value.type,
-                assetId: asset.id,
-                timestamp: trs.value.date,
-                quantity: trs.value.quantity,
-                price: trs.value.price,
-                marks: trs.value.markId ? trs.value.markId : null,
-                notes: null,
-                portfolio: trs.value.portfolioId,
-                source: "spot",
-                fee: trs.value.fee
-            }
-        )
-        await getTransaction(asset.id)// update transaction list in store for ref render
     }
 
     function selectAsset(asset: any) {
