@@ -17,9 +17,7 @@
 
     const reqData = useCommonReqStore()//store with common requests
     const { updateDrop } = reqData
-    // 
-    const searchType = ref('name')
-
+    //
     async function submitForm() {
         if (!modal.validate()) {
             return

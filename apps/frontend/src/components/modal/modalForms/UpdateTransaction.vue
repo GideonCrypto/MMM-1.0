@@ -18,8 +18,6 @@
     const reqData = useCommonReqStore()//store with common requests
     const { updateTransaction, deleteItem, updateDrop } = reqData
     // 
-    const searchType = ref('name')
-
     async function submitForm() {
         if (!modal.validate()) {
             return
@@ -50,7 +48,6 @@
             if (currentTrasnsaction.value.type == 'buy') {
                 for (const e of drops.value) {
                     const trsIds = e.transactions.split(',')
-                    console.log(trsIds);
                     
                     if (trsIds.length == 1 && trsIds[0] === currentTrasnsaction.value.id) {
                         await deleteItem(`drops/${e.id}`)// delete drop main

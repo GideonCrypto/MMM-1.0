@@ -18,12 +18,9 @@
     const reqData = useCommonReqStore()//store with common requests
     const { updateDrop, createTransaction } = reqData
     // 
-    const searchType = ref('name')
 
     async function submitForm() {
         if (!modal.validate()) {
-            console.log('!valite');
-            
             return
         } else {
             const sellTrs = await createTransaction({
