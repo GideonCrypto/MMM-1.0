@@ -27,7 +27,7 @@
             return
         } else {
             await getAssets()
-            
+
             assets.value.forEach(e => {
                 if (e.marketId === libData.value[0].geckoId) {
                     isAssetExist = true
@@ -39,10 +39,10 @@
                             date: formData.value.date,
                             quantity: formData.value.quantity,
                             price: formData.value.price,
-                            markId: formData.value.markId ? formData.value.markId : null,
+                            markId: formData.value.markId.length > 0 ? formData.value.markId : null,
                             portfolioId: formData.value.portfolioId,
                             source: "spot",
-                            fee: formData.value.fee
+                            fee: formData.value.fee >= 0 && Number(formData.value.fee) ? formData.value.fee : 0
                         }, userIdStore)
                         getTransaction(e.id)
                     }// if asset exist create trs
@@ -65,10 +65,10 @@
                     date: formData.value.date,
                     quantity: formData.value.quantity,
                     price: formData.value.price,
-                    markId: formData.value.markId ? formData.value.markId : null,
+                    markId: formData.value.markId.length > 0 ? formData.value.markId : null,
                     portfolioId: formData.value.portfolioId,
                     source: "spot",
-                    fee: formData.value.fee
+                    fee: formData.value.fee >= 0 && Number(formData.value.fee) ? formData.value.fee : 0
                 }, userIdStore)
                 await getTransaction(asset.id)// update transaction list in store for ref render
             }// if asset not exist create it and trs

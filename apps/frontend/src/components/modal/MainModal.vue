@@ -5,6 +5,8 @@
     import AddTransaction from './modalForms/AddTransaction.vue'
     import UpdateTransaction from './modalForms/UpdateTransaction.vue'
     import AddDrop from './modalForms/AddDrop.vue'
+    import UpdateDrop from './modalForms/UpdateDrop.vue'
+    import SellDrop from './modalForms/SellDrop.vue'
 
     const modal = useModalStore()
     const { isOpen, currentModal } = storeToRefs(modal)
@@ -18,6 +20,8 @@
                 <AddTransaction v-if="currentModal === ModalForms.AddTransaction"/>
                 <UpdateTransaction v-if="currentModal === ModalForms.UpdateTransaction"/>
                 <AddDrop v-if="currentModal === ModalForms.AddDrop"/>
+                <UpdateDrop v-if="currentModal === ModalForms.UpdateDrop"/>
+                <SellDrop v-if="currentModal === ModalForms.SellDrop"/>
             </div>
         </div>
     </Teleport>

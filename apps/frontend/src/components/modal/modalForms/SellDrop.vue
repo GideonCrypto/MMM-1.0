@@ -12,29 +12,42 @@
     const { close } = modal
 
     const commonData = useCommonDataStore() // store with common used data
-    const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore, getTransaction, getAssets, changeBlockView, getDrops } = commonData
+    const { getPortfolios, getMarks, userIdStore, getTransaction, getDrops } = commonData
     const { marks, portfolios, libData, transactions, drops } = storeToRefs(commonData)
 
     const reqData = useCommonReqStore()//store with common requests
-    const { updateTransaction, deleteItem, updateDrop } = reqData
+    const { updateDrop, createTransaction } = reqData
     // 
     const searchType = ref('name')
 
     async function submitForm() {
         if (!modal.validate()) {
+            console.log('!valite');
+            
             return
         } else {
-            await updateTransaction({
-                id: currentTrasnsaction.value.id,
-                type: formData.value.type,
+            const sellTrs = await createTransaction({
+                type: 'sell',
                 assetId: currentTrasnsaction.value.assetId,
                 date: formData.value.date,
-                quantity: formData.value.quantity,
+                quantity: +currentTrasnsaction.value.value,
                 price: formData.value.price,
                 markId: formData.value.markId.length > 0 ? formData.value.markId.toString() : null,
                 portfolioId: formData.value.portfolioId,
-                source: formData.value.source ? formData.value.source : null,
+                source: "drop",
                 fee: formData.value.fee >= 0 && Number(formData.value.fee) ? formData.value.fee : 0
+            }, userIdStore)
+
+            const trsIds = [currentTrasnsaction.value.transactions, sellTrs.id]
+            await updateDrop({
+                id: currentTrasnsaction.value.id,
+                date: formData.value.date,
+                value: currentTrasnsaction.value.value,
+                price: formData.value.price,
+                sold: currentTrasnsaction.value.value,
+                fee: formData.value.fee,
+                markId: formData.value.markId.length > 0 ? formData.value.markId.toString() : null,
+                transaction: trsIds.join(','),
             }, userIdStore)
             console.log('Submitting data', formData.value)
 
@@ -42,57 +55,6 @@
         }
         modal.close()
     }
-
-    async function deleteTrs() {
-        if (currentTrasnsaction.value.source == 'drop') {// delete main drop data if its buy trs
-            await getDrops()
-
-            if (currentTrasnsaction.value.type == 'buy') {
-                for (const e of drops.value) {
-                    const trsIds = e.transactions.split(',')
-                    console.log(trsIds);
-                    
-                    if (trsIds.length == 1 && trsIds[0] === currentTrasnsaction.value.id) {
-                        await deleteItem(`drops/${e.id}`)// delete drop main
-                        break
-                    }
-                }
-            } else {
-                for (const e of drops.value) {
-                    const trsIds = e.transactions.split(',')
-                    if (trsIds.includes(currentTrasnsaction.value.id.toString())) {
-                        const updatedIds = trsIds.filter(id => id != currentTrasnsaction.value.id)// all ids without i
-
-                        await updateDrop({
-                            id: e.id,
-                            date: e.date,
-                            value: e.value,
-                            price: e.price,
-                            markId: e.markId,
-                            sold: 0,
-                            fee: 0,
-                            transaction: updatedIds.join(','),
-                        }, userIdStore)
-
-                        break
-                    }
-                }
-            }
-        }
-
-        await deleteItem(`transactions/${currentTrasnsaction.value.id}`)// delete trs
-
-        if (transactions.value.length === 1) {
-            if (transactions.value[0].assetId === currentTrasnsaction.value.assetId) {
-                await deleteItem(`assets/${currentTrasnsaction.value.assetId}`)// delete asset
-                await getAssets()// update assets list
-                changeBlockView()// get to assets page
-            }
-        }// delete asset if it last trs
-
-        await getTransaction(currentTrasnsaction.value.assetId)// update trs list
-        modal.close()
-    }// delete trs and asset if trs is last
 
     onMounted(async () => {
         await getPortfolios()
@@ -103,19 +65,9 @@
 
 <template>
     <form @submit.prevent="submitForm">
-        <h2>Update transaction</h2>
+        <h2>Sell drop</h2>
 
-        <div class="form-row"><!-- Type/Date -->
-            <div class="form-group">
-                <label>Type</label>
-                <select name="type" v-model="modal.formData.type" >
-                    <option disabled value="">Select</option>
-                    <option value="buy">buy</option>
-                    <option value="sell">sell</option>
-                </select>
-                <small v-if="modal.errors.type">{{ modal.errors.type }}</small>
-            </div>
-
+        <div class="form-row"><!-- Date -->
             <div class="form-group">
                 <label>Date</label>
                 <input type="datetime-local" v-model="modal.formData.date" />
@@ -123,13 +75,7 @@
             </div>
         </div>
 
-        <div class="form-row"><!-- Quantity/Price/Fee -->
-            <div class="form-group">
-                <label>Quantity</label>
-                <input type="number" v-model="modal.formData.quantity" />
-                <small v-if="modal.errors.quantity">{{ modal.errors.quantity }}</small>
-            </div>
-
+        <div class="form-row"><!-- Price/Fee -->
             <div class="form-group">
                 <label>Price</label>
                 <input type="number" v-model="modal.formData.price" />
@@ -167,7 +113,6 @@
 
         <div class="buttons">
             <button type="button" @click="modal.close">Close</button>
-            <button type="button" @click="deleteTrs">Delete</button>
             <button type="submit">Submit</button>
         </div>
     </form>

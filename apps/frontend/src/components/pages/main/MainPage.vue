@@ -1,17 +1,24 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
   import { useModalStore, ModalForms } from '../../../store/useModalStore'
   import { useCommonDataStore } from '../../../store/commonDataStore'
   import { storeToRefs } from 'pinia'
 
+  const dataType = ref('transactions')
+  enum dataTypes {
+    Transactions = 'transactions',
+    Swaps = 'swaps',
+    Staking = 'staking',
+    Drops = 'drops',
+  }
   // store
   const modal = useModalStore()
   const { open } = modal
   const { currentTrasnsaction } = storeToRefs(modal)
 
   const commonData = useCommonDataStore()
-  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView } = commonData
-  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock } = storeToRefs(commonData)
+  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView, getDrops } = commonData
+  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock, drops, dictAssets } = storeToRefs(commonData)
   // 
   async function openTrs(id: string) {
     changeBlockView()
@@ -23,11 +30,37 @@
     open(ModalForms.UpdateTransaction)
   }// update trs modal and data 
 
-  // Массив только с покупками
-const buys = computed(() => transactions.value.filter(item => item.type === 'buy'));
+  async function updateDrop(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.UpdateDrop)
+  }// update trs modal and data 
 
-// Массив только с продажами
-const sells = computed(() => transactions.value.filter(item => item.type === 'sell'));
+  async function sellDrop(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.SellDrop)
+  }
+
+  watch(dataType, async () => {
+    switch (dataType.value) {
+      case dataTypes.Transactions:
+        console.log('trs');
+        
+        break;
+      case dataTypes.Swaps:
+        console.log('swp');
+        
+        break;
+      case dataTypes.Staking:
+        console.log('stk');
+        
+        break;
+      case dataTypes.Drops:
+        await getDrops()
+        break;
+      default:
+        break;
+    }
+  })
 
   onMounted(async () => {
     await getPortfolios()
@@ -61,16 +94,41 @@ const sells = computed(() => transactions.value.filter(item => item.type === 'se
       <div class="main-page-data">
         <div class="main-page-data-submenu">
           <button v-show="viewBlock" @click="changeBlockView">Back</button>
-          <select name="dataType" >
-            <option value="all">All data</option>
+          <select name="dataType" v-model="dataType">
             <option value="transactions">Transactions</option>
             <option value="swaps">Swaps</option>
             <option value="staking">Staking</option>
             <option value="drops">Drops</option>
           </select>
         </div>
+        <!-- Drops list -->
+        <div v-if="dataType == dataTypes.Drops" v-show="!viewBlock && dataType == dataTypes.Drops">
+          <ul class="table">
+            <ul class="header-row">
+              <li class="cell head">Name</li>
+              <li class="cell head">Value</li>
+              <li class="cell head">Sold</li>
+              <li class="cell head">Price</li>
+              <li class="cell head">Marks</li>
+            </ul>
+            <li class="row" v-for="(item) in drops" :key="item.id">
+              <div class="full-width top">Added: {{item.timestamp}}</div>
+              <ul class="grid-row" @click="updateDrop(item)">
+                <li class="cell">{{dictAssets[item.assetId]}}</li>
+                <li class="cell">{{item.value}}</li>
+                <li class="cell">{{item.sold}}</li>
+                <li class="cell">{{item.price}}</li>
+                <li class="cell">{{dictMarks[item.marks]}}</li>
+              </ul>
+              <div class="full-width bottom">
+                Метрики и кнопки
+                <button @click="sellDrop(item)">Sell reward</button>
+              </div>
+            </li>
+          </ul>
+        </div>
         <!-- Asset list -->
-        <div v-show="!viewBlock" class="main-page-data-assets">
+        <div v-show="!viewBlock && dataType == dataTypes.Transactions">
           <ul class="table">
             <ul class="header-row">
               <li class="cell head">Name</li>
@@ -93,7 +151,7 @@ const sells = computed(() => transactions.value.filter(item => item.type === 'se
           </ul>
         </div>
         <!-- Transactions list -->
-        <div v-show="viewBlock" class="main-page-data-transactions">
+        <div v-show="viewBlock && dataType == dataTypes.Transactions">
           <ul class="table">
             <ul class="header-row">
               <li class="cell head">Price</li>

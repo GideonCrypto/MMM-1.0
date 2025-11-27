@@ -3,10 +3,14 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useCommonDataStore = defineStore('useCommonDataStore', () => {
+    // ------------------------------------------------------------------
+    // this store used for geting and transform common data from db
+    // ------------------------------------------------------------------
     const viewBlock = ref(false)
     const marks = ref([])// current marks from db
     const portfolios = ref([])// current portfolios from db
     const assets = ref([])// current assets from db by userId
+    const drops = ref([])// current drops from db by userId
     const transactions = ref([])// current asset transactions from db by userId ans assetId
     const assetSuggestions = ref<any[]>([])// asset suggestions for search asset
     const libData = ref<any[]>([])// current lib data about asset from db
@@ -89,6 +93,12 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
 
         transactions.value = response.data
     }// get current assets by user
+
+    async function getDrops() {
+        const response = await axios.get(`http://localhost:3005/drops/dropUser/${userIdStore}`)
+
+        drops.value = response.data
+    }// get current assets by user
     // --------------------------------------------
     // -------------------------------------------- dictionary
     function useDict(listRef, idField = 'id', valueField = 'name') {
@@ -101,6 +111,7 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
 
     const dictPortfolios = useDict(portfolios, 'id', 'name')//create dictionary for portfolio
     const dictMarks = useDict(marks, 'id', 'name')//create dictionary for marks
+    const dictAssets = useDict(assets, 'id', 'name')//create dictionary for assets
     // --------------------------------------------
     // -------------------------------------------- togglers
     function changeBlockView() {
@@ -114,9 +125,11 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         libData,
         userIdStore,
         assets,
+        drops,
         transactions,
         dictPortfolios,
         dictMarks,
+        dictAssets,
         viewBlock,
         // funcs
         getPortfolios,
@@ -125,5 +138,6 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         getAssets,
         getTransaction,
         changeBlockView,
+        getDrops,
     }
 })

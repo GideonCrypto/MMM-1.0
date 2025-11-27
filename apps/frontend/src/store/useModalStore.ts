@@ -5,9 +5,14 @@ export enum ModalForms {
     AddTransaction = 'AddTransaction',
     UpdateTransaction = 'UpdateTransaction',
     AddDrop = 'AddDrop',
+    UpdateDrop = 'UpdateDrop',
+    SellDrop = 'SellDrop',
 }
 
 export const useModalStore = defineStore('useModalStore', () => {
+    // ------------------------------------------------------------------
+    // this store used for modal windows and operations there
+    // ------------------------------------------------------------------
     const isOpen = ref(false)
     const currentModal = ref<ModalForms | null>(null)
     const currentTrasnsaction = ref()
@@ -58,40 +63,43 @@ export const useModalStore = defineStore('useModalStore', () => {
         formData.markId = selectedMarks.value.map(m => m.id)
     }
     // --------------------------------------------
-    // -------------------------------------------- valiating rules
-    const baseValidationRules = {
-        addData: {
+    // -------------------------------------------- validating rules
+    const validationRules = {
+        [ModalForms.AddTransaction]: {
             assetId: (val: string) => (!val ? 'Введите Asset' : null),
             date: (val: number) => (!val ? 'Введите Date' : null),
             portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
             quantity: (val: number) => (!val ? 'Введите Quantity' : null),
             price: (val: number) => (!val ? 'Введите Price' : null),
             fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
-        },
-    }
-
-    const formSpecificRules = {
-        AddTransaction: {
             type: (val: string) => (!val ? 'Введите Type' : null),
-        },
-        UpdateTransaction: {
-            type: (val: string) => (!val ? 'Введите Type' : null),
-        },
-        AddDrop: {},
-    }
-
-    const validationRules = {
-        [ModalForms.AddTransaction]: {
-            ...baseValidationRules.addData,
-            ...formSpecificRules.AddTransaction,
         },
         [ModalForms.UpdateTransaction]: {
-            ...baseValidationRules.addData,
-            ...formSpecificRules.UpdateTransaction,
+            assetId: (val: string) => (!val ? 'Введите Asset' : null),
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
+            quantity: (val: number) => (!val ? 'Введите Quantity' : null),
+            price: (val: number) => (!val ? 'Введите Price' : null),
+            fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
+            type: (val: string) => (!val ? 'Введите Type' : null),
         },
         [ModalForms.AddDrop]: {
-            ...baseValidationRules.addData,
-            ...formSpecificRules.AddDrop,
+            assetId: (val: string) => (!val ? 'Введите Asset' : null),
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (val === null || val === undefined ? 'Введите value' : null),
+            price: (val: number) => (!val ? 'Введите Price' : null),
+            portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
+        },
+        [ModalForms.UpdateDrop]: {
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (val === null || val === undefined ? 'Введите value' : null),
+            price: (val: number) => (!val ? 'Введите Price' : null),
+        },
+        [ModalForms.SellDrop]: {
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (val === null || val === undefined ? 'Введите value' : null),
+            price: (val: number) => (!val ? 'Введите Price' : null),
+            fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
         },
     }
 
@@ -109,7 +117,25 @@ export const useModalStore = defineStore('useModalStore', () => {
             source: ''
         },
         [ModalForms.UpdateTransaction]: {},
-        [ModalForms.AddDrop]: {},
+        [ModalForms.AddDrop]: {
+            assetId: '',
+            asset: '',
+            date: '',
+            quantity: '',
+            price: '',
+            value: '',
+            markId: [],
+            portfolioId: '',
+        },
+        [ModalForms.UpdateDrop]: {},
+        [ModalForms.SellDrop]: {
+            date: '',
+            price: '',
+            markId: [],
+            portfolioId: '',
+            fee: '',
+            value: '', 
+        },
     }
 // --------------------------------------------
     function timeConverter(date: Date) {
@@ -123,7 +149,7 @@ export const useModalStore = defineStore('useModalStore', () => {
 
         Object.assign(formData, defaultFormData[form])// reset form to default
 
-        if (form === ModalForms.UpdateTransaction && currentTrasnsaction.value) {
+        if (form === ModalForms.UpdateTransaction && currentTrasnsaction.value) {//if UpdateTransaction do autofill
             const t = currentTrasnsaction.value
 
             Object.assign(formData, {
@@ -145,7 +171,25 @@ export const useModalStore = defineStore('useModalStore', () => {
                     ? new Date(t.timestamp).toISOString().slice(0, 16)
                     : ''
             })
-        }//if UpdateTransaction do autofill
+        } else if (form === ModalForms.UpdateDrop && currentTrasnsaction.value) {//if UpdateDrop do autofill
+            const t = currentTrasnsaction.value
+
+            Object.assign(formData, {
+                id: t.id ?? '',
+                assetId: t.assetId ?? '',
+                value: t.value ?? '',
+                price: t.price ?? '',
+                markId: Array.isArray(t.marks)
+                    ? t.marks
+                    : t.marks
+                    ? t.marks.split(',').map(m => m.trim())
+                    : [],
+                // date to datetime-local
+                date: t.timestamp
+                    ? new Date(t.timestamp).toISOString().slice(0, 16)
+                    : ''
+            })
+        }
 
         Object.assign(formData, initialData)// init data
 
