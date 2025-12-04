@@ -13,7 +13,7 @@
 
     const commonData = useCommonDataStore()//store with common used data
     const { getPortfolios, getMarks, getAssetsNames, assetSuggestions, userIdStore, getTransaction, getAssets } = commonData
-    const { marks, portfolios, libData, assets } = storeToRefs(commonData)
+    const { marks, portfolios, libData, assets, doubleSuggestion } = storeToRefs(commonData)
 
     const reqData = useCommonReqStore()//store with common requests
     const { createAsset, createTransaction } = reqData
@@ -85,6 +85,7 @@
     watch(() => modal.formData.asset,
         (newValue) => {
             if (newValue && newValue.length > 1) {
+                doubleSuggestion.value = false;
                 getAssetsNames(searchType.value, newValue)
             } else {
                 assetSuggestions.length = 0

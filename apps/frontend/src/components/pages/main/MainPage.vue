@@ -17,8 +17,8 @@
   const { currentTrasnsaction } = storeToRefs(modal)
 
   const commonData = useCommonDataStore()
-  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView, getDrops } = commonData
-  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock, drops, dictAssets } = storeToRefs(commonData)
+  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView, getDrops, getStaking } = commonData
+  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock, drops, dictAssets, staking } = storeToRefs(commonData)
   // 
   async function openTrs(id: string) {
     changeBlockView()
@@ -38,7 +38,22 @@
   async function sellDrop(transaction) {
     currentTrasnsaction.value = transaction
     open(ModalForms.SellDrop)
-  }
+  }// create sell drop trs
+
+  async function addStaking(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.AddStaking)
+  }// create sell drop trs
+
+  async function updateStaking(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.UpdateStaking)
+  }// update staking modal and data 
+
+  async function SellStakingReward(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.SellStakingReward)
+  }// create sell staking trs
 
   watch(dataType, async () => {
     switch (dataType.value) {
@@ -51,8 +66,7 @@
         
         break;
       case dataTypes.Staking:
-        console.log('stk');
-        
+        await getStaking()        
         break;
       case dataTypes.Drops:
         await getDrops()
@@ -74,7 +88,7 @@
     <div class="main-page-sidebar">
       <button @click="open(ModalForms.AddTransaction)" >Add transaction</button>
       <button @click="open(ModalForms.AddDrop)">Add drop</button>
-      <button>Add staking</button>
+      <button @click="open(ModalForms.AddStaking)">Add staking</button>
       <button>Add swap</button>
       <select name="portfolio" >
         <option value="all">All</option>
@@ -123,6 +137,32 @@
               <div class="full-width bottom">
                 Метрики и кнопки
                 <button @click="sellDrop(item)">Sell reward</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Stakin list -->
+        <div v-if="dataType == dataTypes.Staking" v-show="!viewBlock && dataType == dataTypes.Staking">
+          <ul class="table">
+            <ul class="header-row">
+              <li class="cell head">Staked</li>
+              <li class="cell head">Value</li>
+              <li class="cell head">Reward</li>
+              <li class="cell head">Value</li>
+              <li class="cell head">Sold</li>
+            </ul>
+            <li class="row" v-for="(item) in staking" :key="item.id">
+              <div class="full-width top">Added: {{item.timestamp}}</div>
+              <ul class="grid-row" @click="updateStaking(item)">
+                <li class="cell">{{dictAssets[item.assetId]}}</li>
+                <li class="cell">{{item.value}}</li>
+                <li class="cell">{{dictAssets[item.coinToReceive]}}</li>
+                <li class="cell">{{item.reward}}</li>
+                <li class="cell">{{item.rewardSold}}</li>
+              </ul>
+              <div class="full-width bottom">
+                Метрики и кнопки
+                <button @click="SellStakingReward(item)">Sell reward</button>
               </div>
             </li>
           </ul>

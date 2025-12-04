@@ -7,6 +7,9 @@ export enum ModalForms {
     AddDrop = 'AddDrop',
     UpdateDrop = 'UpdateDrop',
     SellDrop = 'SellDrop',
+    AddStaking = 'AddStaking',
+    UpdateStaking = 'UpdateStaking',
+    SellStakingReward = 'SellStakingReward',
 }
 
 export const useModalStore = defineStore('useModalStore', () => {
@@ -101,6 +104,23 @@ export const useModalStore = defineStore('useModalStore', () => {
             price: (val: number) => (!val ? 'Введите Price' : null),
             fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
         },
+        [ModalForms.AddStaking]: {
+            assetId: (val: string) => (!val ? 'Введите Asset to stake' : null),
+            assetIdReward: (val: string) => (!val ? 'Введите Asset to receive' : null),
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (!val ? 'Введите Value' : null),
+            reward: (val: number) => (!val ? 'Введите Reward' : null),
+        },
+        [ModalForms.UpdateStaking]: {
+            
+        },
+        [ModalForms.SellStakingReward]: {
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (!val ? 'Введите value' : null),
+            price: (val: number) => (!val ? 'Введите Price' : null),
+            fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
+            portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
+        },
     }
 
     const defaultFormData: Record<ModalForms, Record<string, any>> = {
@@ -136,6 +156,27 @@ export const useModalStore = defineStore('useModalStore', () => {
             fee: '',
             value: '', 
         },
+        [ModalForms.AddStaking]: {
+            assetId: '',
+            assetIdReward: '',
+            asset: '',
+            assetReward: '',
+            date: '',
+            reward: '',
+            value: '',
+            markId: [],
+        },
+        [ModalForms.UpdateStaking]: {
+            
+        },
+        [ModalForms.SellStakingReward]: {
+            date: '',
+            price: '',
+            markId: [],
+            portfolioId: '',
+            fee: '',
+            value: '', 
+        },
     }
 // --------------------------------------------
     function timeConverter(date: Date) {
@@ -148,10 +189,9 @@ export const useModalStore = defineStore('useModalStore', () => {
         isOpen.value = true
 
         Object.assign(formData, defaultFormData[form])// reset form to default
+        const t = currentTrasnsaction.value
 
         if (form === ModalForms.UpdateTransaction && currentTrasnsaction.value) {//if UpdateTransaction do autofill
-            const t = currentTrasnsaction.value
-
             Object.assign(formData, {
                 id: t.id ?? '',
                 assetId: t.assetId ?? '',
@@ -172,13 +212,25 @@ export const useModalStore = defineStore('useModalStore', () => {
                     : ''
             })
         } else if (form === ModalForms.UpdateDrop && currentTrasnsaction.value) {//if UpdateDrop do autofill
-            const t = currentTrasnsaction.value
-
             Object.assign(formData, {
                 id: t.id ?? '',
                 assetId: t.assetId ?? '',
                 value: t.value ?? '',
                 price: t.price ?? '',
+                markId: Array.isArray(t.marks)
+                    ? t.marks
+                    : t.marks
+                    ? t.marks.split(',').map(m => m.trim())
+                    : [],
+                // date to datetime-local
+                date: t.timestamp
+                    ? new Date(t.timestamp).toISOString().slice(0, 16)
+                    : ''
+            })
+        } else if (form === ModalForms.UpdateStaking && currentTrasnsaction.value) {
+            Object.assign(formData, {
+                value: t.value ?? '',
+                reward: t.reward ?? '',
                 markId: Array.isArray(t.marks)
                     ? t.marks
                     : t.marks

@@ -11,9 +11,13 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     const portfolios = ref([])// current portfolios from db
     const assets = ref([])// current assets from db by userId
     const drops = ref([])// current drops from db by userId
+    const staking = ref([])// current drops from db by userId
     const transactions = ref([])// current asset transactions from db by userId ans assetId
     const assetSuggestions = ref<any[]>([])// asset suggestions for search asset
+    const doubleSuggestion = ref(false)// toggler for asset suggestion
+    const assetSuggestionsStaking = ref<any[]>([])// asset suggestions for search asset staking reward
     const libData = ref<any[]>([])// current lib data about asset from db
+    const libDataSecond = ref<any[]>([])// second current lib data about asset from db for staking and swaps
     const userIdStore = "08ffce73-4e68-4c90-8e09-c77722dc6c80"// current user id
     // -------------------------------------------- api req
     async function getMarks() {
@@ -37,11 +41,6 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     }// get current portfolio data by user
 
     async function getAssetsNames(type: string, value: string) {
-        if (!value || value.length < 2) {
-            assetSuggestions.value = [];
-            return;
-        }
-
         try {
             let url = '';
 
@@ -56,10 +55,17 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
             const response = await axios.get(url);
             const data = response.data;
 
-            assetSuggestions.value = Array.isArray(data) ? data : (data ? [data] : []);
+            if (doubleSuggestion.value) {
+                assetSuggestionsStaking.value = Array.isArray(data) ? data : (data ? [data] : []);
+            } else {
+                assetSuggestions.value = Array.isArray(data) ? data : (data ? [data] : []);
+            }
 
-            libData.value = []
-            libData.value = assetSuggestions.value
+            if (doubleSuggestion.value) {
+                libDataSecond.value = assetSuggestionsStaking.value
+            } else {
+                libData.value = assetSuggestions.value
+            }
         } catch (err: any) {
             if (err?.response) {
                 console.error('[getAssetsNames] err.response.status:', err.response.status);
@@ -69,6 +75,8 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
             } else {
                 console.error('[getAssetsNames] unknown error:', err);
             }
+
+            assetSuggestionsStaking.value = [];
             assetSuggestions.value = [];
         }
     }// get asset for suggestion and creation
@@ -98,10 +106,16 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         const response = await axios.get(`http://localhost:3005/drops/dropUser/${userIdStore}`)
 
         drops.value = response.data
-    }// get current assets by user
+    }// get current drops by user
+
+    async function getStaking() {
+        const response = await axios.get(`http://localhost:3005/staking/stakingUser/${userIdStore}`)
+
+        staking.value = response.data
+    }// get current staking by user
     // --------------------------------------------
     // -------------------------------------------- dictionary
-    function useDict(listRef, idField = 'id', valueField = 'name') {
+    function useDict(listRef: any, idField = 'id', valueField = 'name') {
         return computed(() =>
             Object.fromEntries(
                 listRef.value.map(item => [item[idField], item[valueField]])
@@ -122,10 +136,14 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         marks,
         portfolios,
         assetSuggestions,
+        assetSuggestionsStaking,
+        doubleSuggestion,
         libData,
+        libDataSecond,
         userIdStore,
         assets,
         drops,
+        staking,
         transactions,
         dictPortfolios,
         dictMarks,
@@ -139,5 +157,6 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         getTransaction,
         changeBlockView,
         getDrops,
+        getStaking,
     }
 })

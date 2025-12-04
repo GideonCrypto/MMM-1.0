@@ -2,11 +2,16 @@
     import { ref } from 'vue'
     import { useModalStore, ModalForms } from '../../store/useModalStore'
     import { storeToRefs } from 'pinia'
+    // modals imports
     import AddTransaction from './modalForms/AddTransaction.vue'
     import UpdateTransaction from './modalForms/UpdateTransaction.vue'
     import AddDrop from './modalForms/AddDrop.vue'
     import UpdateDrop from './modalForms/UpdateDrop.vue'
     import SellDrop from './modalForms/SellDrop.vue'
+    import AddStaking from './modalForms/AddStaking.vue'
+    import SellStakingReward from './modalForms/sellStakingReward.vue'
+    import UpdateStaking from './modalForms/updateStaking.vue'
+    // 
 
     const modal = useModalStore()
     const { isOpen, currentModal } = storeToRefs(modal)
@@ -22,6 +27,9 @@
                 <AddDrop v-if="currentModal === ModalForms.AddDrop"/>
                 <UpdateDrop v-if="currentModal === ModalForms.UpdateDrop"/>
                 <SellDrop v-if="currentModal === ModalForms.SellDrop"/>
+                <AddStaking v-if="currentModal === ModalForms.AddStaking"/>
+                <SellStakingReward v-if="currentModal === ModalForms.SellStakingReward"/>
+                <UpdateStaking v-if="currentModal === ModalForms.UpdateStaking"/>
             </div>
         </div>
     </Teleport>

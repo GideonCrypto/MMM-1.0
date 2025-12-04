@@ -140,6 +140,90 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
         
         return response.data
     }
+    // staking
+    async function createStaking(stakingData: {
+            assetId: string,
+            date: number, 
+            value: number,
+            reward: number,
+            rewardSold: number,
+            assetToReceive: string,
+            markId: string,
+        }, userIdStore: string) {
+        const response = await axios.post(`${url}staking/createStaking`,
+            {
+                userId: userIdStore,
+                assetId: stakingData.assetId,
+                timestamp: stakingData.date, 
+                value: stakingData.value,
+                reward: stakingData.reward,
+                rewardSold: stakingData.rewardSold,
+                coinToReceive: stakingData.assetToReceive,
+                marks: stakingData.markId,
+                notes: null,
+            }
+        )
+        
+        return response.data
+    }
+
+    async function updateStaking(stakingData: {
+            id: string,
+            assetId: string,
+            date: number, 
+            value: number,
+            reward: number,
+            rewardSold: number,
+            assetToReceive: string,
+            markId: string,
+        }, userIdStore: string) {
+        const response = await axios.patch(`${url}staking/updateStaking`,
+            {
+                id: stakingData.id,
+                userId: userIdStore,
+                assetId: stakingData.assetId,
+                timestamp: stakingData.date, 
+                value: stakingData.value,
+                reward: stakingData.reward,
+                rewardSold: stakingData.rewardSold,
+                coinToReceive: stakingData.assetToReceive,
+                marks: stakingData.markId,
+                notes: null,
+            }
+        )
+        
+        return response.data
+    }
+
+    async function sellStakingReward(stakingData: {
+            type: string, 
+            assetId: string,
+            date: number, 
+            quantity: number,
+            price: number,
+            markId: string,
+            portfolioId: string,
+            source: string,
+            fee: number
+        }, userIdStore: string) {
+        const response = await axios.post(`${url}staking/sellReward`,
+            {
+                userId: userIdStore,
+                type: stakingData.type,
+                assetId: stakingData.assetId,
+                timestamp: stakingData.date,
+                quantity: stakingData.quantity,
+                price: stakingData.price,
+                marks: stakingData.markId,
+                notes: null,
+                portfolio: stakingData.portfolioId,
+                source: "staking",
+                fee: stakingData.fee
+            }
+        )
+        
+        return response.data
+    }
     // --------------------------------------------
     // -------------------------------------------- unified req
     async function deleteItem(route: string) {
@@ -149,12 +233,16 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
     return {
         // assets
         createAsset,
-        //  transactions
+        // transactions
         createTransaction,
         updateTransaction,
-        //drops
+        // drops
         createDrop,
         updateDrop,
+        // staking
+        createStaking,
+        updateStaking,
+        sellStakingReward,
         // unified req
         deleteItem,
     }
