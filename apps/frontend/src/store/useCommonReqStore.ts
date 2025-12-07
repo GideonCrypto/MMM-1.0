@@ -79,7 +79,7 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
                 marks: assetData.markId,
                 notes: null,
                 portfolio: assetData.portfolioId,
-                source: "spot",
+                source: assetData.source,
                 fee: assetData.fee
             }
         )
@@ -224,6 +224,68 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
         
         return response.data
     }
+    // swaps
+    async function createSwap(swapData: {
+            assetIdChange: string,
+            assetIdReceive: string,
+            fee: number,
+            changeAmount: number,
+            receiveAmount: number,
+            priceChange: number,
+            priceReceive: number,
+            date: number
+        }, userIdStore: string) {
+        const response = await axios.post(`${url}swaps/createSwap`,
+            {
+                userId: userIdStore,
+                assetIdChange: swapData.assetIdChange,
+                assetIdReceive: swapData.assetIdReceive,
+                fee: swapData.fee,
+                changeAmount: swapData.changeAmount,
+                receiveAmount: swapData.receiveAmount,
+                priceChange: swapData.priceChange,
+                priceReceive: swapData.priceReceive,
+                timestamp: swapData.date,
+                notes: null,
+            }
+        )
+        
+        return response.data
+    }
+
+    async function updateSwap(swapData: {
+            id: string,
+            assetIdChange: string,
+            assetIdReceive: string,
+            fee: number,
+            changeAmount: number,
+            receiveAmount: number,
+            priceChange: number,
+            priceReceive: number,
+            timestamp: number,
+            sellTransactionId: string,
+            buyTransactionId: string
+        }, userIdStore: string) {
+        const response = await axios.patch(`${url}swaps/updateSwap`,
+            {
+                id: swapData.id,
+                userId: userIdStore,
+                assetIdChange: swapData.assetIdChange,
+                assetIdReceive: swapData.assetIdReceive,
+                fee: swapData.fee,
+                changeAmount: swapData.changeAmount,
+                receiveAmount: swapData.receiveAmount,
+                priceChange: swapData.priceChange,
+                priceReceive: swapData.priceReceive,
+                timestamp: swapData.timestamp,
+                notes: null,
+                sellTransactionId: swapData.sellTransactionId,
+                buyTransactionId: swapData.buyTransactionId
+            }
+        )
+        
+        return response.data
+    }
     // --------------------------------------------
     // -------------------------------------------- unified req
     async function deleteItem(route: string) {
@@ -243,6 +305,9 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
         createStaking,
         updateStaking,
         sellStakingReward,
+        // swaps
+        createSwap,
+        updateSwap,
         // unified req
         deleteItem,
     }

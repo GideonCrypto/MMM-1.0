@@ -12,6 +12,7 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
     const assets = ref([])// current assets from db by userId
     const drops = ref([])// current drops from db by userId
     const staking = ref([])// current drops from db by userId
+    const swaps = ref([])// current swaps from db by userId
     const transactions = ref([])// current asset transactions from db by userId ans assetId
     const assetSuggestions = ref<any[]>([])// asset suggestions for search asset
     const doubleSuggestion = ref(false)// toggler for asset suggestion
@@ -98,21 +99,29 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
                 assetId: assetId
             }
         )
-
         transactions.value = response.data
     }// get current assets by user
 
     async function getDrops() {
         const response = await axios.get(`http://localhost:3005/drops/dropUser/${userIdStore}`)
-
         drops.value = response.data
     }// get current drops by user
 
     async function getStaking() {
         const response = await axios.get(`http://localhost:3005/staking/stakingUser/${userIdStore}`)
-
         staking.value = response.data
     }// get current staking by user
+
+    async function getSwaps() {
+        const response = await axios.post(`http://localhost:3005/swaps/getSwaps/`,
+            {
+                userId: userIdStore
+            }
+        )
+
+        swaps.value = response.data
+    }// get current swaps by user
+
     // --------------------------------------------
     // -------------------------------------------- dictionary
     function useDict(listRef: any, idField = 'id', valueField = 'name') {
@@ -144,6 +153,7 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         assets,
         drops,
         staking,
+        swaps,
         transactions,
         dictPortfolios,
         dictMarks,
@@ -158,5 +168,6 @@ export const useCommonDataStore = defineStore('useCommonDataStore', () => {
         changeBlockView,
         getDrops,
         getStaking,
+        getSwaps,
     }
 })

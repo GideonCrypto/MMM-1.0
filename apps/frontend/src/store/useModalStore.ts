@@ -10,6 +10,8 @@ export enum ModalForms {
     AddStaking = 'AddStaking',
     UpdateStaking = 'UpdateStaking',
     SellStakingReward = 'SellStakingReward',
+    AddSwap = 'AddSwap',
+    UpdateSwap = 'UpdateSwap',
 }
 
 export const useModalStore = defineStore('useModalStore', () => {
@@ -112,7 +114,9 @@ export const useModalStore = defineStore('useModalStore', () => {
             reward: (val: number) => (!val ? 'Введите Reward' : null),
         },
         [ModalForms.UpdateStaking]: {
-            
+            date: (val: number) => (!val ? 'Введите Date' : null),
+            value: (val: number) => (!val ? 'Введите Value' : null),
+            reward: (val: number) => (!val ? 'Введите Reward' : null),
         },
         [ModalForms.SellStakingReward]: {
             date: (val: number) => (!val ? 'Введите Date' : null),
@@ -120,6 +124,24 @@ export const useModalStore = defineStore('useModalStore', () => {
             price: (val: number) => (!val ? 'Введите Price' : null),
             fee: (val: number) => (val === null || val === undefined ? 'Введите Fee' : null),
             portfolioId: (val: any) => (!val ? 'Введите Portfolio' : null),
+        },
+        [ModalForms.AddSwap]: {
+            assetIdChange: (val: string) => (!val ? 'Введите Asset to change' : null),
+            assetIdReceive: (val: string) => (!val ? 'Введите Asset to receive' : null),
+            fee: (val: number) => (!val ? 'Введите Fee' : null),
+            changeAmount: (val: number) => (!val ? 'Введите Change amount' : null),
+            receiveAmount: (val: number) => (!val ? 'Введите Receive amount' : null),
+            priceChange: (val: number) => (!val ? 'Введите Price' : null),
+            priceReceive: (val: number) => (!val ? 'Введите Price' : null),
+            date: (val: number) => (!val ? 'Введите Date' : null)
+        },
+        [ModalForms.UpdateSwap]: {
+            fee: (val: number) => (!val ? 'Введите Fee' : null),
+            changeAmount: (val: number) => (!val ? 'Введите Change amount' : null),
+            receiveAmount: (val: number) => (!val ? 'Введите Receive amount' : null),
+            priceChange: (val: number) => (!val ? 'Введите Price' : null),
+            priceReceive: (val: number) => (!val ? 'Введите Price' : null),
+            date: (val: number) => (!val ? 'Введите Date' : null)
         },
     }
 
@@ -166,9 +188,7 @@ export const useModalStore = defineStore('useModalStore', () => {
             value: '',
             markId: [],
         },
-        [ModalForms.UpdateStaking]: {
-            
-        },
+        [ModalForms.UpdateStaking]: {},
         [ModalForms.SellStakingReward]: {
             date: '',
             price: '',
@@ -177,6 +197,19 @@ export const useModalStore = defineStore('useModalStore', () => {
             fee: '',
             value: '', 
         },
+        [ModalForms.AddSwap]: {
+            asset: '',
+            assetReceive: '',
+            assetIdChange: '',
+            assetIdReceive: '',
+            fee: '',
+            changeAmount: '',
+            receiveAmount: '',
+            priceChange: '',
+            priceReceive: '',
+            date: ''
+        },
+        [ModalForms.UpdateSwap]: {},
     }
 // --------------------------------------------
     function timeConverter(date: Date) {
@@ -236,6 +269,18 @@ export const useModalStore = defineStore('useModalStore', () => {
                     : t.marks
                     ? t.marks.split(',').map(m => m.trim())
                     : [],
+                // date to datetime-local
+                date: t.timestamp
+                    ? new Date(t.timestamp).toISOString().slice(0, 16)
+                    : ''
+            })
+        } else if (form === ModalForms.UpdateSwap && currentTrasnsaction.value) {
+            Object.assign(formData, {
+                fee: t.fee ?? '',
+                changeAmount: t.changeAmount ?? '',
+                receiveAmount: t.receiveAmount ?? '',
+                priceChange: t.priceChange ?? '',
+                priceReceive: t.priceReceive ?? '',
                 // date to datetime-local
                 date: t.timestamp
                     ? new Date(t.timestamp).toISOString().slice(0, 16)

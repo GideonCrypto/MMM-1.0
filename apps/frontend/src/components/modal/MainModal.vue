@@ -11,6 +11,8 @@
     import AddStaking from './modalForms/AddStaking.vue'
     import SellStakingReward from './modalForms/sellStakingReward.vue'
     import UpdateStaking from './modalForms/updateStaking.vue'
+    import AddSwap from './modalForms/AddSwap.vue'
+    import UpdateSwap from './modalForms/UpdateSwap.vue'
     // 
 
     const modal = useModalStore()
@@ -30,6 +32,8 @@
                 <AddStaking v-if="currentModal === ModalForms.AddStaking"/>
                 <SellStakingReward v-if="currentModal === ModalForms.SellStakingReward"/>
                 <UpdateStaking v-if="currentModal === ModalForms.UpdateStaking"/>
+                <AddSwap v-if="currentModal === ModalForms.AddSwap"/>
+                <UpdateSwap v-if="currentModal === ModalForms.UpdateSwap"/>
             </div>
         </div>
     </Teleport>

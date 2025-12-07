@@ -17,8 +17,8 @@
   const { currentTrasnsaction } = storeToRefs(modal)
 
   const commonData = useCommonDataStore()
-  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView, getDrops, getStaking } = commonData
-  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock, drops, dictAssets, staking } = storeToRefs(commonData)
+  const { getPortfolios, getMarks, getAssets, getTransaction, changeBlockView, getDrops, getStaking, getSwaps } = commonData
+  const { assets, transactions, portfolios, marks, dictPortfolios, dictMarks, viewBlock, drops, dictAssets, staking, swaps } = storeToRefs(commonData)
   // 
   async function openTrs(id: string) {
     changeBlockView()
@@ -43,7 +43,7 @@
   async function addStaking(transaction) {
     currentTrasnsaction.value = transaction
     open(ModalForms.AddStaking)
-  }// create sell drop trs
+  }// add staking
 
   async function updateStaking(transaction) {
     currentTrasnsaction.value = transaction
@@ -55,6 +55,16 @@
     open(ModalForms.SellStakingReward)
   }// create sell staking trs
 
+  async function addSwap(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.AddSwap)
+  }// add swap and buy/sell trs
+
+  async function updateSwap(transaction) {
+    currentTrasnsaction.value = transaction
+    open(ModalForms.UpdateSwap)
+  }// update swap data
+
   watch(dataType, async () => {
     switch (dataType.value) {
       case dataTypes.Transactions:
@@ -62,8 +72,7 @@
         
         break;
       case dataTypes.Swaps:
-        console.log('swp');
-        
+        await getSwaps()
         break;
       case dataTypes.Staking:
         await getStaking()        
@@ -89,7 +98,7 @@
       <button @click="open(ModalForms.AddTransaction)" >Add transaction</button>
       <button @click="open(ModalForms.AddDrop)">Add drop</button>
       <button @click="open(ModalForms.AddStaking)">Add staking</button>
-      <button>Add swap</button>
+      <button @click="open(ModalForms.AddSwap)">Add swap</button>
       <select name="portfolio" >
         <option value="all">All</option>
         <option value="transactions">Main</option>
@@ -141,7 +150,7 @@
             </li>
           </ul>
         </div>
-        <!-- Stakin list -->
+        <!-- Staking list -->
         <div v-if="dataType == dataTypes.Staking" v-show="!viewBlock && dataType == dataTypes.Staking">
           <ul class="table">
             <ul class="header-row">
@@ -163,6 +172,31 @@
               <div class="full-width bottom">
                 Метрики и кнопки
                 <button @click="SellStakingReward(item)">Sell reward</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Swaps list -->
+        <div v-if="dataType == dataTypes.Swaps" v-show="!viewBlock && dataType == dataTypes.Swaps">
+          <ul class="table">
+            <ul class="header-row">
+              <li class="cell head">Asset to change</li>
+              <li class="cell head">Value</li>
+              <li class="cell head">Asset to receive</li>
+              <li class="cell head">Value</li>
+              <li class="cell head">Fee</li>
+            </ul>
+            <li class="row" v-for="(item) in swaps" :key="item.id">
+              <div class="full-width top">Added: {{item.timestamp}}</div>
+              <ul class="grid-row" @click="updateSwap(item)">
+                <li class="cell">{{dictAssets[item.assetIdChange]}}</li>
+                <li class="cell">{{item.changeAmount}}</li>
+                <li class="cell">{{dictAssets[item.assetIdReceive]}}</li>
+                <li class="cell">{{item.receiveAmount}}</li>
+                <li class="cell">{{item.fee}}</li>
+              </ul>
+              <div class="full-width bottom">
+                Метрики
               </div>
             </li>
           </ul>

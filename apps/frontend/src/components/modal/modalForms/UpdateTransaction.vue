@@ -31,7 +31,7 @@
                 price: formData.value.price,
                 markId: formData.value.markId.length > 0 ? formData.value.markId.toString() : null,
                 portfolioId: formData.value.portfolioId,
-                source: formData.value.source ? formData.value.source : null,
+                source: formData.value.source ? formData.value.source : 'spot',
                 fee: formData.value.fee >= 0 && Number(formData.value.fee) ? formData.value.fee : 0
             }, userIdStore)
             console.log('Submitting data', formData.value)
@@ -101,8 +101,13 @@
 <template>
     <form @submit.prevent="submitForm">
         <h2>Update transaction</h2>
-
-        <div class="form-row"><!-- Type/Date -->
+        <div v-show="currentTrasnsaction.source == 'swap'">
+            <small>Transaction with source: swap, can be changed only from main swap source.</small>
+            <br>
+            <small>Here you can change only portfolio and mark.</small>
+        </div>
+        <br>
+        <div class="form-row" v-show="currentTrasnsaction.source != 'swap'"><!-- Type/Date -->
             <div class="form-group">
                 <label>Type</label>
                 <select name="type" v-model="modal.formData.type" >
@@ -120,7 +125,7 @@
             </div>
         </div>
 
-        <div class="form-row"><!-- Quantity/Price/Fee -->
+        <div class="form-row"  v-show="currentTrasnsaction.source != 'swap'"><!-- Quantity/Price/Fee -->
             <div class="form-group">
                 <label>Quantity</label>
                 <input type="number" v-model="modal.formData.quantity" />
@@ -164,7 +169,7 @@
 
         <div class="buttons">
             <button type="button" @click="modal.close">Close</button>
-            <button type="button" @click="deleteTrs">Delete</button>
+            <button type="button" @click="deleteTrs" v-show="currentTrasnsaction.source != 'swap'">Delete</button>
             <button type="submit">Submit</button>
         </div>
     </form>
