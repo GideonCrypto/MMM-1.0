@@ -15,9 +15,10 @@ export class TransactionService {
                 quantity: data.quantity,
                 price: data.price,
                 userId: data.userId,
-                marks: null,
-                notes: null,
-                portfolio: null,
+                marks: data.marks,
+                notes: data.notes,
+                portfolio: data.portfolio,
+                fee: data.fee,
                 source: data.source
             },
         });
@@ -72,9 +73,10 @@ export class TransactionService {
                 quantity: data.quantity,
                 price: data.price,
                 userId: data.userId,
-                marks: null,
-                notes: null,
-                portfolio: null,
+                marks: data.marks,
+                notes: data.notes,
+                portfolio: data.portfolio,
+                fee: data.fee,
                 source: data.source
             },
         });
