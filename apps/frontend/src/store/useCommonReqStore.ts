@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useCommonReqStore = defineStore('useCommonReqStore', () => {
     // ------------------------------------------------------------------
-    // this store used for post and delete requests
+    // this store used for post update and delete requests
     // ------------------------------------------------------------------
     // -------------------------------------------- vars
     const url = 'http://localhost:3005/'

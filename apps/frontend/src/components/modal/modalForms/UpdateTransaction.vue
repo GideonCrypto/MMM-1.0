@@ -34,7 +34,6 @@
                 source: formData.value.source ? formData.value.source : 'spot',
                 fee: formData.value.fee >= 0 && Number(formData.value.fee) ? formData.value.fee : 0
             }, userIdStore)
-            console.log('Submitting data', formData.value)
 
             await getTransaction(currentTrasnsaction.value.assetId)// update trs list
         }

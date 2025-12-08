@@ -34,8 +34,6 @@
                 markId: formData.value.markId.length > 0 ? formData.value.markId.toString() : null,
             }, userIdStore)
 
-            console.log('Submitting data', formData.value)
-
             await getStaking()// update staking list
             await getTransaction(currentTrasnsaction.value.assetId)// update trs list
         }

@@ -46,7 +46,6 @@
                 markId: formData.value.markId.length > 0 ? formData.value.markId.toString() : null,
                 transaction: trsIds.join(','),
             }, userIdStore)
-            console.log('Submitting data', formData.value)
 
             await getTransaction(currentTrasnsaction.value.assetId)// update trs list
         }

@@ -260,7 +260,7 @@ export const useModalStore = defineStore('useModalStore', () => {
                     ? new Date(t.timestamp).toISOString().slice(0, 16)
                     : ''
             })
-        } else if (form === ModalForms.UpdateStaking && currentTrasnsaction.value) {
+        } else if (form === ModalForms.UpdateStaking && currentTrasnsaction.value) {//if UpdateStaking do autofill
             Object.assign(formData, {
                 value: t.value ?? '',
                 reward: t.reward ?? '',
@@ -274,7 +274,7 @@ export const useModalStore = defineStore('useModalStore', () => {
                     ? new Date(t.timestamp).toISOString().slice(0, 16)
                     : ''
             })
-        } else if (form === ModalForms.UpdateSwap && currentTrasnsaction.value) {
+        } else if (form === ModalForms.UpdateSwap && currentTrasnsaction.value) {//if UpdateSwap do autofill
             Object.assign(formData, {
                 fee: t.fee ?? '',
                 changeAmount: t.changeAmount ?? '',

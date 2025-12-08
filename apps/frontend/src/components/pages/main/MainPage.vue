@@ -25,52 +25,13 @@
     await getTransaction(id)
   }// open trs book by assetId
 
-  async function updateTrs(transaction) {
+  async function openModalByType(transaction, type: ModalForms) {
     currentTrasnsaction.value = transaction
-    open(ModalForms.UpdateTransaction)
-  }// update trs modal and data 
-
-  async function updateDrop(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.UpdateDrop)
-  }// update trs modal and data 
-
-  async function sellDrop(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.SellDrop)
-  }// create sell drop trs
-
-  async function addStaking(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.AddStaking)
-  }// add staking
-
-  async function updateStaking(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.UpdateStaking)
-  }// update staking modal and data 
-
-  async function SellStakingReward(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.SellStakingReward)
-  }// create sell staking trs
-
-  async function addSwap(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.AddSwap)
-  }// add swap and buy/sell trs
-
-  async function updateSwap(transaction) {
-    currentTrasnsaction.value = transaction
-    open(ModalForms.UpdateSwap)
-  }// update swap data
+    open(type)
+  }// unified func to open modal and autofill
 
   watch(dataType, async () => {
     switch (dataType.value) {
-      case dataTypes.Transactions:
-        console.log('trs');
-        
-        break;
       case dataTypes.Swaps:
         await getSwaps()
         break;
@@ -83,7 +44,7 @@
       default:
         break;
     }
-  })
+  })// watcher for select datatype
 
   onMounted(async () => {
     await getPortfolios()
@@ -136,7 +97,7 @@
             </ul>
             <li class="row" v-for="(item) in drops" :key="item.id">
               <div class="full-width top">Added: {{item.timestamp}}</div>
-              <ul class="grid-row" @click="updateDrop(item)">
+              <ul class="grid-row" @click="openModalByType(item, ModalForms.UpdateDrop)">
                 <li class="cell">{{dictAssets[item.assetId]}}</li>
                 <li class="cell">{{item.value}}</li>
                 <li class="cell">{{item.sold}}</li>
@@ -145,7 +106,7 @@
               </ul>
               <div class="full-width bottom">
                 Метрики и кнопки
-                <button @click="sellDrop(item)">Sell reward</button>
+                <button @click="openModalByType(item, ModalForms.SellDrop)">Sell reward</button>
               </div>
             </li>
           </ul>
@@ -162,7 +123,7 @@
             </ul>
             <li class="row" v-for="(item) in staking" :key="item.id">
               <div class="full-width top">Added: {{item.timestamp}}</div>
-              <ul class="grid-row" @click="updateStaking(item)">
+              <ul class="grid-row" @click="openModalByType(item, ModalForms.UpdateStaking)">
                 <li class="cell">{{dictAssets[item.assetId]}}</li>
                 <li class="cell">{{item.value}}</li>
                 <li class="cell">{{dictAssets[item.coinToReceive]}}</li>
@@ -171,7 +132,7 @@
               </ul>
               <div class="full-width bottom">
                 Метрики и кнопки
-                <button @click="SellStakingReward(item)">Sell reward</button>
+                <button @click="openModalByType(item, ModalForms.SellStakingReward)">Sell reward</button>
               </div>
             </li>
           </ul>
@@ -188,7 +149,7 @@
             </ul>
             <li class="row" v-for="(item) in swaps" :key="item.id">
               <div class="full-width top">Added: {{item.timestamp}}</div>
-              <ul class="grid-row" @click="updateSwap(item)">
+              <ul class="grid-row" @click="openModalByType(item, ModalForms.UpdateSwap)">
                 <li class="cell">{{dictAssets[item.assetIdChange]}}</li>
                 <li class="cell">{{item.changeAmount}}</li>
                 <li class="cell">{{dictAssets[item.assetIdReceive]}}</li>
@@ -234,7 +195,7 @@
               <li class="cell head">Source</li>
               <li class="cell head">Portfolio</li>
             </ul>
-            <li class="row" v-for="(item) in transactions" :key="item.id" @click="updateTrs(item)">
+            <li class="row" v-for="(item) in transactions" :key="item.id" @click="openModalByType(item, ModalForms.UpdateTransaction)">
               <div class="full-width top">Added: {{item.timestamp}}</div>
               <ul class="grid-row">
                 <li class="cell" :class="item.type">{{item.price}}</li>

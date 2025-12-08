@@ -12,7 +12,7 @@
     const { close } = modal
 
     const commonData = useCommonDataStore()//store with common used data
-    const { getAssetsNames, assetSuggestions, assetSuggestionsStaking, userIdStore, getAssets,getSwaps } = commonData
+    const { getAssetsNames, assetSuggestions, assetSuggestionsStaking, userIdStore, getAssets, getSwaps } = commonData
     const { libData, libDataSecond, assets, doubleSuggestion } = storeToRefs(commonData)
 
     const reqData = useCommonReqStore()//store with common requests
