@@ -12,6 +12,8 @@ export enum ModalForms {
     SellStakingReward = 'SellStakingReward',
     AddSwap = 'AddSwap',
     UpdateSwap = 'UpdateSwap',
+    Portfolio = 'Portfolio',
+    Marks = 'Marks'
 }
 
 export const useModalStore = defineStore('useModalStore', () => {

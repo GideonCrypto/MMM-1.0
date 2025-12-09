@@ -286,6 +286,28 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
         
         return response.data
     }
+    // portfolio
+    async function createPortfolio(portfolioName: string, userIdStore: string) {
+        const response = await axios.post(`${url}portfolio/createPortfolio`,
+            {
+                userId: userIdStore,
+                name: portfolioName,
+            }
+        )
+        
+        return response.data
+    }
+    // marks
+    async function createMark(markName: string, userIdStore: string) {
+        const response = await axios.post(`${url}marks/createMark`,
+            {
+                userId: userIdStore,
+                name: markName,
+            }
+        )
+        
+        return response.data
+    }
     // --------------------------------------------
     // -------------------------------------------- unified req
     async function deleteItem(route: string) {
@@ -308,6 +330,10 @@ export const useCommonReqStore = defineStore('useCommonReqStore', () => {
         // swaps
         createSwap,
         updateSwap,
+        // portfolio
+        createPortfolio,
+        // mark
+        createMark,
         // unified req
         deleteItem,
     }

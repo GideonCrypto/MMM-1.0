@@ -13,6 +13,8 @@
     import UpdateStaking from './modalForms/updateStaking.vue'
     import AddSwap from './modalForms/AddSwap.vue'
     import UpdateSwap from './modalForms/UpdateSwap.vue'
+    import Portfolio from './modalForms/Portfolio.vue'
+    import Marks from './modalForms/Marks.vue'
     // 
 
     const modal = useModalStore()
@@ -24,6 +26,7 @@
     <Teleport to="body">
         <div v-if="isOpen" class="modal-overlay" @click.self="close">
             <div class="modal">
+                <!-- data collecting and modificating -->
                 <AddTransaction v-if="currentModal === ModalForms.AddTransaction"/>
                 <UpdateTransaction v-if="currentModal === ModalForms.UpdateTransaction"/>
                 <AddDrop v-if="currentModal === ModalForms.AddDrop"/>
@@ -34,6 +37,9 @@
                 <UpdateStaking v-if="currentModal === ModalForms.UpdateStaking"/>
                 <AddSwap v-if="currentModal === ModalForms.AddSwap"/>
                 <UpdateSwap v-if="currentModal === ModalForms.UpdateSwap"/>
+                <!-- add/remove portfolio and marks -->
+                <Portfolio v-if="currentModal === ModalForms.Portfolio"/>
+                <Marks v-if="currentModal === ModalForms.Marks"/>
             </div>
         </div>
     </Teleport>
