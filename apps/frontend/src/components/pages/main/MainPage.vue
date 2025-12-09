@@ -64,7 +64,8 @@
         <option value="all">All</option>
         <option value="transactions">Main</option>
       </select>
-      <button>Add portfolio</button>
+      <button @click="open(ModalForms.Portfolio)">Add/Delete portfolio</button>
+      <button @click="open(ModalForms.Marks)">Add/Delete mark</button>
     </div>
     <div class="main-page-content">
       <div class="main-page-analitics">
