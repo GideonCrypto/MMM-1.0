@@ -187,13 +187,13 @@
         <div class="form-row"><!-- Quantity/Price/Fee -->
             <div class="form-group">
                 <label>Reward</label>
-                <input type="number" v-model="modal.formData.reward" />
+                <input type="number" v-model="modal.formData.reward" step="0.000000000001"/>
                 <small v-if="modal.errors.reward">{{ modal.errors.reward }}</small>
             </div>
 
             <div class="form-group">
                 <label>Value</label>
-                <input type="number" v-model="modal.formData.value" />
+                <input type="number" v-model="modal.formData.value" step="0.000000000001"/>
                 <small v-if="modal.errors.value">{{ modal.errors.value }}</small>
             </div>
         </div>

@@ -127,19 +127,19 @@
         <div class="form-row"  v-show="currentTrasnsaction.source != 'swap'"><!-- Quantity/Price/Fee -->
             <div class="form-group">
                 <label>Quantity</label>
-                <input type="number" v-model="modal.formData.quantity" />
+                <input type="number" v-model="modal.formData.quantity"  step="0.000000000001"/>
                 <small v-if="modal.errors.quantity">{{ modal.errors.quantity }}</small>
             </div>
 
             <div class="form-group">
                 <label>Price</label>
-                <input type="number" v-model="modal.formData.price" />
+                <input type="number" v-model="modal.formData.price"  step="0.000000000001"/>
                 <small v-if="modal.errors.price">{{ modal.errors.price }}</small>
             </div>
 
             <div class="form-group">
                 <label>Fee</label>
-                <input type="number" v-model="modal.formData.fee" />
+                <input type="number" v-model="modal.formData.fee"  step="0.000000000001"/>
                 <small v-if="modal.errors.fee">{{ modal.errors.fee }}</small>
             </div>
         </div>

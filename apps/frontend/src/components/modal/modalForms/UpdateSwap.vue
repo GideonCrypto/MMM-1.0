@@ -78,13 +78,13 @@
         <div class="form-row"><!-- Quantity/Price (change) -->
             <div class="form-group">
                 <label>Change amount</label>
-                <input type="number" v-model="modal.formData.changeAmount" />
+                <input type="number" v-model="modal.formData.changeAmount"  step="0.000000000001"/>
                 <small v-if="modal.errors.changeAmount">{{ modal.errors.changeAmount }}</small>
             </div>
 
             <div class="form-group">
                 <label>Price</label>
-                <input type="number" v-model="modal.formData.priceChange" />
+                <input type="number" v-model="modal.formData.priceChange"  step="0.000000000001"/>
                 <small v-if="modal.errors.priceChange">{{ modal.errors.priceChange }}</small>
             </div>
         </div>
@@ -92,13 +92,13 @@
         <div class="form-row"><!-- Quantity/Price/ (receive)) -->
             <div class="form-group">
                 <label>Receive amount</label>
-                <input type="number" v-model="modal.formData.receiveAmount" />
+                <input type="number" v-model="modal.formData.receiveAmount" step="0.000000000001"/>
                 <small v-if="modal.errors.receiveAmount">{{ modal.errors.receiveAmount }}</small>
             </div>
 
             <div class="form-group">
                 <label>Price</label>
-                <input type="number" v-model="modal.formData.priceReceive" />
+                <input type="number" v-model="modal.formData.priceReceive" step="0.000000000001"/>
                 <small v-if="modal.errors.priceReceive">{{ modal.errors.priceReceive }}</small>
             </div>
         </div>
@@ -106,7 +106,7 @@
         <div class="form-row"><!-- Fee -->
             <div class="form-group">
                 <label>Fee</label>
-                <input type="number" v-model="modal.formData.fee" />
+                <input type="number" v-model="modal.formData.fee" step="0.000000000001"/>
                 <small v-if="modal.errors.fee">{{ modal.errors.fee }}</small>
             </div>
         </div>
